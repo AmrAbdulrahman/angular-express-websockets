@@ -1,0 +1,76 @@
+﻿/* Blue and Gray */
+.Column .ui-widget-content {
+    height: 24px;
+    border: 1px solid #DDD;
+    background: #DDD;
+    color: #111;
+}
+
+.Column .ui-progressbar .ui-progressbar-value {
+    background: #5B9BD5;
+    margin: 0px;
+    height: 100%;
+}
+
+/* Orange and Green */
+.UnitTestFunctionalBoxBar .ui-widget-content {
+    height: 30px;
+    border: 1px solid #DDD;
+    background: #F7CBAC;
+    color: #111;
+}
+
+.UnitTestFunctionalBoxBar .ui-progressbar .ui-progressbar-value {
+    background: #C5E0B3;
+    margin: 0px;
+    height: 100%;
+}
+
+
+.Column .ProgressBar {
+    position: absolute;
+    left: 25px;
+    width: 40px;
+    margin-top: 2px;
+}
+
+
+.LargeProgressBar {
+    position: absolute;
+    width: 150px;
+    left: 10px;
+    top: -3px;
+}
+
+.ProgressBarPercentage {
+    position: absolute;
+    display: block;
+    width: 100%;
+    text-align: center;
+    color: black;
+    font-weight: bold;
+}
+
+.ProgressBarText {
+    position: absolute;
+    display: block;
+    width: 100%;
+    text-align: center;
+    color: black;
+    font-size: 11px;
+    bottom: 6px;
+}
+
+.Column .PendingProgressBar .ui-progressbar-value{
+    width: 0px;
+}
+
+.Column .CompletedProgressBar .ui-progressbar-value{
+    width: 100%;
+    background-color: #62983D;
+}
+
+.Column .FailedProgressBar .ui-progressbar-value{
+    width: 100%;
+    background-color: #ca3b3b;
+}

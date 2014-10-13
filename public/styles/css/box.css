@@ -1,0 +1,64 @@
+/**********************************
+	Mixins
+**********************************/
+.Shadow {
+  -webkit-box-shadow: 3px 3px 7px 0px rgba(50, 50, 50, 0.75);
+  -moz-box-shadow: 3px 3px 7px 0px rgba(50, 50, 50, 0.75);
+  box-shadow: 3px 3px 7px 0px rgba(50, 50, 50, 0.75);
+}
+/**********************************
+	Constants
+***********************************/
+/**********************************
+	Styling
+**********************************/
+.Box {
+  width: 170px;
+  height: 170px;
+  float: left;
+  margin-left: 20px;
+  margin-top: 20px;
+  -webkit-box-shadow: 3px 3px 7px 0px rgba(50, 50, 50, 0.75);
+  -moz-box-shadow: 3px 3px 7px 0px rgba(50, 50, 50, 0.75);
+  box-shadow: 3px 3px 7px 0px rgba(50, 50, 50, 0.75);
+}
+.Box:hover {
+  cursor: pointer;
+}
+.Box .BoxTitle {
+  position: relative;
+  width: 100%;
+  height: 15%;
+}
+.Box .BoxTitle .BoxTitleText {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  font-weight: bold;
+}
+.Box .BoxContentWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.Box .PendingWrapper {
+  margin-left: 43%;
+  margin-top: 30%;
+}
+.Box .CancelledWrapper {
+  margin-top: 25%;
+}
+.Box .CancelledWrapper .Cancelled {
+  display: block;
+  width: 100%;
+  font-size: 13px;
+  font-weight: bold;
+  color: #cc0000;
+  text-align: center;
+}
+.Box .CancelledWrapper .EntryFailed {
+  display: block;
+  width: 100%;
+  font-size: 10px;
+  text-align: center;
+}

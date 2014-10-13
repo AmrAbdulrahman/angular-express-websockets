@@ -1,0 +1,124 @@
+﻿
+
+@import "theme.less";
+@import "mixins.less";
+
+
+@rowHeight: 30px;
+
+#MainList
+{
+
+    width: 1130px;
+	height: 500px;
+	margin-top: 20px;
+    margin: auto;
+    padding-top: 20px;
+	overflow-y: scroll;
+    overflow-x: hidden;
+	.Gradiant(@backgroundGradiant); 
+    border-color: #b5c2cf;
+    border-width: 1px;
+    border-style: solid;
+
+	#Header {
+        width: 1010px;
+        margin-left: 55px;
+        height: 30px;
+    }
+
+	.Column {
+        float: left;
+        height: 30px;
+        margin-right: 5px;
+        text-align: center;
+
+		.HeaderContent {
+            margin-top: 7px;
+            text-align: center;
+        }
+	}
+
+	// Columns widths
+	.ChangeListBuild	{ width: 160px; }
+	.Owner				{ width: 120px; }
+	.TimeStarted		{ width: 150px;	}
+	.State				{ width: 100px;	}
+	.Metrics			{ width: 100px;	}
+	.Build				{ width: 100px;	}
+	.UnitTest			{ width: 100px;	}
+	.FunctionalTest		{ width: 130px;	}
+
+
+	#Rows {
+        width: 1010px;
+        margin-left: 55px;
+
+
+		.Row {
+			border-width: 1px;
+			border-style: solid;
+			margin-bottom: 5px;
+
+			.RowHeader {
+				width: 100%;
+				height: @rowHeight;
+
+				&:hover {
+					cursor: pointer;
+				}
+
+				.Column {
+					position: relative;
+				}
+			}
+
+			.RowDetails {
+				height: 215px;
+			}
+
+			&.ng-enter, &.ng-move {
+				.Transition(@defaultAnimationProperty, @defaultAnimationTime, ease);
+				opacity:0;
+				height: 0px;
+				visibility: hidden;
+			}
+
+			&.ng-enter.ng-enter-active,
+			&.ng-move.ng-move-active {
+				opacity:1;
+				height: @rowHeight;
+				visibility: visible;
+			}
+		}
+
+		.Red {
+			.Border(@redBorder);
+			.Gradiant(@redGradiant);
+			color: @redFont;
+		}
+
+		.Green {
+			.Border(@greenBorder);
+			.Gradiant(@greenGradiant);
+			color: @greenFont;
+		}
+
+		.Box.Green {
+			border-width: 3px;
+		}
+
+		.Gray {
+			.Border(@grayBorder);
+			.Gradiant(@grayGradiant);
+			color: @grayFont;
+		}
+
+		.Blue {
+			.Border(@blueBorder);
+			.Gradiant(@blueGradiant);
+			color: @blueFont;
+		}
+
+    } // end of rows
+} // end of list

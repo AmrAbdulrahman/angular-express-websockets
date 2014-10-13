@@ -1,0 +1,431 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" ng-app="listApp">
+<head>
+    <title></title>
+    <!-- JQuery and Plugins -->
+    <script src="config.js" type="text/javascript"></script>
+    <script src="js/lib/jquery-1.11.0.min.js" type="text/javascript"></script>
+    <script src="js/lib/jquery-ui.min.js" type="text/javascript"></script>
+    <script src="js/plugins/jquery.bpopup.min.js" type="text/javascript"></script>
+    <script src="js/plugins/chart.min.js" type="text/javascript"></script>
+
+    <!-- ng-Base -->
+    <script src="js/lib/angular.min.js" type="text/javascript"></script>
+    <script src="js/lib/angular-animate.js" type="text/javascript"></script>
+    <script src="js/controllers/listController.js" type="text/javascript"></script>
+
+    <!-- Socket -->
+    <script src="js/lib/socket.io.js" type="text/javascript"></script>
+
+    <!-- ng-Directives -->
+    <script src="js/directives/progress-bar.js" type="text/javascript"></script>
+    <script src="js/directives/large-progress-bar.js" type="text/javascript"></script>
+    <script src="js/directives/accordion.js" type="text/javascript"></script>
+    <script src="js/directives/popup.js" type="text/javascript"></script>
+    <script src="js/directives/chart.js" type="text/javascript"></script>
+
+    <!-- ng-Services -->
+    <script src="js/services/utils.js" type="text/javascript"></script>
+    <script src="js/services/literals.js" type="text/javascript"></script>
+    <script src="js/services/sample.js" type="text/javascript"></script>
+    <script src="js/services/lookups.js" type="text/javascript"></script>
+    <script src="js/services/socket-io.js" type="text/javascript"></script>
+    <script src="js/services/websockets.js" type="text/javascript"></script>
+
+    <!-- styles -->
+    <link href="styles/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="styles/css/list.css" rel="stylesheet" type="text/css" />
+    <link href="styles/css/box.css" rel="stylesheet" type="text/css" />
+    <link href="styles/css/box-metrics.css" rel="stylesheet" type="text/css" />
+    <link href="styles/css/box-build.css" rel="stylesheet" type="text/css" />
+    <link href="styles/css/box-unit-functional-test.css" rel="stylesheet" type="text/css" />
+    <link href="styles/css/result.css" rel="stylesheet" type="text/css" />
+    <link href="styles/css/progress-bar.css" rel="stylesheet" />
+    <link href="styles/css/icons.css" rel="stylesheet" type="text/css" />
+    <link href="styles/css/log.css" rel="stylesheet" type="text/css" />
+</head>
+<body ng-controller="listController">
+
+   
+    <div id="MainList">
+
+        <div id="Header">
+            <div class="Column ChangeListBuild">
+                <span class="HeaderContent"> {{ literals.ChangelistBuild }} </span>
+            </div>
+            <div class="Column Owner">
+                <span class="HeaderContent"> {{ literals.Owner }} </span>
+            </div>
+            <div class="Column TimeStarted">
+                <span class="HeaderContent"> {{ literals.TimeStarted }} </span>
+            </div>
+            <div class="Column State">
+                <span class="HeaderContent"> {{ literals.State }} </span>
+            </div>
+            <div class="Column Metrics">
+                <span class="HeaderContent"> {{ literals.Metrics }} </span>
+            </div>
+            <div class="Column Build">
+                <span class="HeaderContent"> {{ literals.Build }} </span>
+            </div>
+            <div class="Column UnitTest">
+                <span class="HeaderContent"> {{ literals.UnitTest }} </span>
+            </div>
+            <div class="Column FunctionalTest">
+                <span class="HeaderContent"> {{ literals.FunctionalTest }} </span>
+            </div>
+        </div>
+
+        <div accordion id="Rows" headerSelector=".RowHeader" rowsCount="{{ rows.length }}" currentActiveRowIndex="{{ currentActiveRow }}">
+
+            <div ng-repeat="row in rows"
+                 ng-class="{
+                    Row: true,
+                    Gray: IsPending(row),
+                    Blue: IsRunning(row),
+                    Green: IsCompleted(row),
+                    Red: IsFailed(row)}"
+                    class="Row">
+
+                <div class="RowHeader" ng-click="activate($index)">
+                    <div class="Column ChangeListBuild">
+                        <div class="HeaderContent">
+                            <div ng-class="{
+                                 rowicon: true,
+                                 PendingChangelist: IsPendingFirewall(row),
+                                 RunningChangelist: IsRunningFirewall(row),
+                                 CompletedChangelist: IsCompletedFirewall(row),
+                                 FailedChangelist: IsFailedFirewall(row),
+                                 PendingBuild: IsPendingBuild(row),
+                                 RunningBuild: IsRunningBuild(row),
+                                 CompletedBuild: IsCompletedBuild(row),
+                                 FailedBuild: IsFailedBuild(row) }"></div>
+                            {{ row.Title }}
+                        </div>
+                    </div>
+                    <div class="Column Owner">
+                        <div class="HeaderContent"> {{ row.Owner }} </div>
+                    </div>
+                    <div class="Column TimeStarted">
+                        <div class="HeaderContent"> {{ row.TimeStarted | date: "M/d/yyyy h:mma" | lowercase }} </div>
+                    </div>
+                    <div class="Column State">
+                        <div class="HeaderContent"> {{ row.Status }} </div>
+                    </div>
+                    <div class="Column Metrics">
+                        <progress-bar row="row" percentage="row.Metrics.Percentage" status="row.Metrics.Status" ></progress-bar>
+                    </div>
+                    <div class="Column Build">
+                        <progress-bar row="row" percentage="row.Build.Percentage" status="row.Build.Status" ></progress-bar>
+                    </div>
+                    <div class="Column UnitTest">
+                        <progress-bar row="row" percentage="row.UnitTest.Percentage" status="row.UnitTest.Status" ></progress-bar>
+                    </div>
+                    <div class="Column FunctionalTest">
+                        <progress-bar row="row" percentage="row.FunctionalTest.Percentage" status="row.FunctionalTest.Status" ></progress-bar>
+                    </div>
+                </div>
+
+                <div class="RowDetails">
+
+                    <div class="Box"
+                         ng-click="ShowPopup($index)"
+                         ng-class="{
+                         Box: true,
+                         Gray:  row.Metrics.Status == BoxStatusType.Pending || row.Metrics.Status == BoxStatusType.Cancelled,
+                         Blue:  row.Metrics.Status == BoxStatusType.Running ,
+                         Green: row.Metrics.Status == BoxStatusType.Completed ,
+                         Red:   row.Metrics.Status == BoxStatusType.Failed }">
+
+                        <div class="BoxTitle">
+                            <span class="BoxTitleText">
+                                {{ literals.Metrics }}
+                            </span>
+                        </div>
+                        <div class="BoxContentWrapper" ng-hide="(row.Metrics.Status == BoxStatusType.Pending || row.Metrics.Status == BoxStatusType.Cancelled) || (row.Type == RowType.Firewall && row.Status == FirewallStatusType.Pending) || (row.Type == RowType.Build && row.Status == BuildStatusType.Pending)">
+                            <div class="MetricsBoxContent">
+                                <div class="Arrow GreenArrow">
+                                    <span class="ArrowText"> {{ row.Metrics.Test }} </span>
+                                </div>
+                                <span class="BelowArrowText"> {{ literals.Test }} </span>
+                            </div>
+                            <div class="MetricsBoxContent">
+                                <div class="Arrow RedArrow">
+                                    <span class="ArrowText"> {{ row.Metrics.Maintability }} </span>
+                                </div>
+                                <span class="BelowArrowText"> {{ literals.Maintability }} </span>
+                            </div>
+                            <div class="MetricsBoxContent">
+                                <div class="Arrow YellowArrow">
+                                    <span class="ArrowText"> {{ row.Metrics.Security }} </span>
+                                </div>
+                                <span class="BelowArrowText"> {{ literals.Security }} </span>
+                            </div>
+                            <div class="MetricsBoxContent">
+                                <div class="Arrow YellowArrow">
+                                    <span class="ArrowText"> {{ row.Metrics.Workmanship }} </span>
+                                </div>
+                                <span class="BelowArrowText"> {{ literals.Workmanship }} </span>
+                            </div>
+                        </div>
+                        <div class="PendingWrapper">
+                            <div class="PendingIcon" ng-show="(row.Metrics.Status == BoxStatusType.Pending) || (row.Type == RowType.Firewall && row.Status == FirewallStatusType.Pending) || (row.Type == RowType.Build && row.Status == BuildStatusType.Pending)"></div>
+                        </div>
+                        <div class="CancelledWrapper">
+                            <div ng-show="(row.Metrics.Status == BoxStatusType.Cancelled)"> 
+                                <span class="Cancelled">{{ literals.Cancelled }}</span>
+                                <span class="EntryFailed">{{ literals.EntryHasAlreadyFailed }}</span> 
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="Box"
+                         ng-click="ShowPopup($index)"
+                         ng-class="{
+                         Box: true,
+                         Gray:  row.Build.Status == BoxStatusType.Pending  || row.Build.Status == BoxStatusType.Cancelled,
+                         Blue:  row.Build.Status == BoxStatusType.Running ,
+                         Green: row.Build.Status == BoxStatusType.Completed ,
+                         Red:   row.Build.Status == BoxStatusType.Failed }">
+
+                        <div class="BoxTitle">
+                            <span class="BoxTitleText">
+                                {{ literals.Build }}
+                            </span>
+                        </div>
+                        <div class="BoxContentWrapper" ng-hide="(row.Build.Status == BoxStatusType.Pending || row.Build.Status == BoxStatusType.Cancelled) || (row.Type == RowType.Firewall && row.Status == FirewallStatusType.Pending) || (row.Type == RowType.Build && row.Status == BuildStatusType.Pending)">
+                            <div class="BuildBoxContent">
+                                <div class="Computer"></div>
+                                <span class="BelowComputerText"> {{ literals.Debug }} </span>
+                            </div>
+                            <div class="BuildBoxContent">
+                                <div class="Computer"></div>
+                                <span class="BelowComputerText"> {{ literals.Release }} </span>
+                            </div>
+                            <div class="BuildBoxDate">
+                                <span class="BuildBoxDateText"> {{ row.Build.Datetime | date: "h:mma - M/d/yyyy" | lowercase }} </span>
+                            </div>
+                        </div>
+                        <div class="PendingWrapper">
+                            <div class="PendingIcon" ng-show="(row.Build.Status == BoxStatusType.Pending) || (row.Type == RowType.Firewall && row.Status == FirewallStatusType.Pending) || (row.Type == RowType.Build && row.Status == BuildStatusType.Pending)"></div>
+                        </div>
+                        <div class="CancelledWrapper">
+                            <div ng-show="(row.Build.Status == BoxStatusType.Cancelled)"> 
+                                <span class="Cancelled">{{ literals.Cancelled }}</span>
+                                <span class="EntryFailed">{{ literals.EntryHasAlreadyFailed }}</span> 
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="Box"
+                         ng-click="ShowPopup($index)"
+                         ng-class="{
+                         Box: true,
+                         Gray:  row.UnitTest.Status == BoxStatusType.Pending || row.UnitTest.Status == BoxStatusType.Cancelled ,
+                         Blue:  row.UnitTest.Status == BoxStatusType.Running ,
+                         Green: row.UnitTest.Status == BoxStatusType.Completed ,
+                         Red:   row.UnitTest.Status == BoxStatusType.Failed }">
+
+                        <div class="BoxTitle">
+                            <span class="BoxTitleText">
+                                {{ literals.UnitTest }}
+                            </span>
+                        </div>
+                        <div class="BoxContentWrapper" ng-hide="(row.UnitTest.Status == BoxStatusType.Pending || row.UnitTest.Status == BoxStatusType.Cancelled) || (row.Type == RowType.Firewall && row.Status == FirewallStatusType.Pending) || (row.Type == RowType.Build && row.Status == BuildStatusType.Pending)">
+                            <div class="UnitTestFunctionalBoxContent">
+                                <div class="Chart">
+                                    <chart successCount="row.UnitTest.SuccessCount" failureCount="row.UnitTest.FailureCount"></chart>
+                                </div>
+                            </div>
+                            <div class="UnitTestFunctionalBoxContent">
+                                <span class="Percentage"> {{ row.UnitTest.TestsPassed }}%</span>
+                                <span class="PercentageText"> {{ literals.TestsPassed | lowercase }}</span>
+                            </div>
+                            <div class="UnitTestFunctionalBoxBar">
+
+                                <large-progress-bar row="row" percentage="row.UnitTest.CodeCovered"></large-progress-bar>
+                            
+                                <span class="ProgressBarPercentage">{{ row.UnitTest.CodeCovered }}%</span>
+                                <span class="ProgressBarText">{{ literals.CodeCovered | lowercase }}</span>
+                            </div>
+                        </div>
+                        <div class="PendingWrapper">
+                            <div class="PendingIcon" ng-show="(row.UnitTest.Status == BoxStatusType.Pending) || (row.Type == RowType.Firewall && row.Status == FirewallStatusType.Pending) || (row.Type == RowType.Build && row.Status == BuildStatusType.Pending)"></div>
+                        </div>
+                        <div class="CancelledWrapper">
+                            <div ng-show="(row.UnitTest.Status == BoxStatusType.Cancelled)"> 
+                                <span class="Cancelled">{{ literals.Cancelled }}</span>
+                                <span class="EntryFailed">{{ literals.EntryHasAlreadyFailed }}</span> 
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="Box"
+                         ng-click="ShowPopup($index)"
+                         ng-class="{
+                         Box: true,
+                         Gray:  row.FunctionalTest.Status == BoxStatusType.Pending || row.FunctionalTest.Status == BoxStatusType.Cancelled,
+                         Blue:  row.FunctionalTest.Status == BoxStatusType.Running ,
+                         Green: row.FunctionalTest.Status == BoxStatusType.Completed ,
+                         Red:   row.FunctionalTest.Status == BoxStatusType.Failed }">
+
+                        <div class="BoxTitle">
+                            <span class="BoxTitleText">
+                                {{ literals.FunctionalTest }}
+                            </span>
+                        </div>
+                        <div class="BoxContentWrapper" ng-hide="(row.FunctionalTest.Status == BoxStatusType.Pending || row.FunctionalTest.Status == BoxStatusType.Cancelled) || (row.Type == RowType.Firewall && row.Status == FirewallStatusType.Pending) || (row.Type == RowType.Build && row.Status == BuildStatusType.Pending)">
+                            <div class="UnitTestFunctionalBoxContent">
+                                <div class="Chart">
+                                    <chart successCount="row.FunctionalTest.SuccessCount" failureCount="row.FunctionalTest.FailureCount"></chart>
+                                </div>
+                            </div>
+                            <div class="UnitTestFunctionalBoxContent">
+                                <span class="Percentage">{{ row.FunctionalTest.TestsPassed }}%</span>
+                                <span class="PercentageText">{{ literals.TestsPassed | lowercase }}</span>
+                            </div>
+                            <div class="UnitTestFunctionalBoxBar">
+                        
+                                <large-progress-bar row="row" percentage="row.FunctionalTest.CodeCovered"></large-progress-bar>
+
+                                <span class="ProgressBarPercentage">{{ row.FunctionalTest.CodeCovered }}%</span>
+                                <span class="ProgressBarText">{{ literals.CodeCovered | lowercase }}</span>
+                            </div>
+                        </div>
+                        <div class="PendingWrapper">
+                            <div class="PendingIcon" ng-show="(row.FunctionalTest.Status == BoxStatusType.Pending) || (row.Type == RowType.Firewall && row.Status == FirewallStatusType.Pending) || (row.Type == RowType.Build && row.Status == BuildStatusType.Pending)"></div>
+                        </div>
+                        <div class="CancelledWrapper">
+                            <div ng-show="(row.FunctionalTest.Status == BoxStatusType.Cancelled)"> 
+                                <span class="Cancelled">{{ literals.Cancelled }}</span>
+                                <span class="EntryFailed">{{ literals.EntryHasAlreadyFailed }}</span> 
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="Result">
+                        <span class="ResultText">
+                            {{ literals.Result }}
+                        </span>
+
+                        <!-- Firewall Accepted -->
+                        <div class="ResultDetails" ng-show="row.Type == RowType.Firewall && row.Status == FirewallStatusType.Accepted">
+                            <span class="ChangeAcceptedText"> {{ literals.ChangeAccepted }} </span>
+                            <span class="ChangeAcceptedMessage BigMessage"> {{ literals.AutoMerged }} </span>
+                            <div class="ChangeAcceptedAction">
+                                <input type="button" value="{{ literals.MergedBuild }}" class="Button FindButton" />
+                            </div>
+                        </div>
+
+                        <!-- Firewall Rejected -->
+                        <div class="ResultDetails" ng-show="row.Type == RowType.Firewall && row.Status == FirewallStatusType.Rejected">
+                            <span class="ChangeRejectedText"> {{ literals.ChangeRejected }} </span>
+                            <span class="ChangeRejectedMessage BigMessage">{{ literals.MetricsReduction }}</span>
+                            <div class="ChangeRejectedAction">
+                                <input type="button" value="{{ literals.FindIssues }}" class="Button FindButton" />
+                            </div>
+                        </div>
+
+                        <!-- Build Succeed -->
+                        <div class="ResultDetails" ng-show="row.Type == RowType.Build && row.Status == BuildStatusType.Completed">
+                            <span class="BuildSucceedMessage BigMessage">{{ literals.Complete }}</span>
+                            <div class="BuildSucceedAction">
+                                <input type="button" value="{{ literals.Deploy }}" class="Button" />
+                                <span class="to"> {{ literals.To }} </span>
+
+                                <select class="DeploymentOption">
+                                    <option selected="selected"> {{ literals.Production }} </option>
+                                    <option> {{ literals.Development }} </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Build Failed -->
+                        <div class="ResultDetails" ng-show="row.Type == RowType.Build && row.Status == BuildStatusType.Failed">
+                            <span class="BuildFailedMessage BigMessage"> {{ literals.Failed }}</span>
+                            <div class="BuildFailedAction">
+                                <input type="button" value="{{ literals.LogFile }}" class="Button" />
+                            </div>
+                        </div>
+
+                        <!-- Pending -->
+                        <div class="ResultDetails" ng-show="(row.Type == RowType.Firewall && row.Status == FirewallStatusType.Pending) || (row.Type == RowType.Build && row.Status == BuildStatusType.Pending)">
+                            <span class="PendingMessage BigMessage"> {{ literals.Pending }} </span>
+                            <div class="IconWrapper">
+                                <div class="PendingIcon"></div>
+                            </div>
+                        </div>
+
+                        <!-- Running -->
+                        <div class="ResultDetails" ng-show="(row.Type == RowType.Firewall && row.Status == FirewallStatusType.Running) || (row.Type == RowType.Build && row.Status == BuildStatusType.Running)">
+                            <span class="RunningMessage BigMessage"> {{ literals.Running }}... </span>
+                            <div class="IconWrapper">
+                                <div class="RunningIcon"></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="logs">
+        <div id="logHeader"><span class="text">LOG</span></div>
+        <div id="logContent">
+            <div ng-repeat="log in logs" class="log">
+                <span class="time">[{{log.time | date : "hh:mm:ss"}}]</span>
+                <span class="message">{{log.message}}</span>
+            </div>
+        </div>
+    </div>
+
+
+    <popup></popup>
+
+    <br />
+    <br />
+
+    <input type="button" value="Pull row from the server (for testing only)" ng-click="PullNewRow()">
+    <br />
+    <input type="button" value="Add sample row (client side, random duplicate of existing rows)" ng-click="AddNewRow()"/>
+    <br />
+
+
+    Change row index (Build)
+    <input type="text" ng-model="indexToBeChanged_Build" placeholder="zero based index" value="0" />
+    to
+    <select ng-model="newBuildStatus">
+        <option ng-repeat="type in BuildStatusType" ng-init="Completed">{{type}}</option>
+    </select>
+    <input type="button" value="Change" ng-click="ChangeRowStatus_Build()"/>
+
+    (invalid input will be just neglected)
+
+    <br />
+
+    Change row index (Firewall)
+    <input type="text" ng-model="indexToBeChanged_Firewall" placeholder="zero based index" value="0" />
+    to
+    <select ng-model="newFirewallStatus">
+        <option ng-repeat="type in FirewallStatusType" ng-init="Completed">{{type}}</option>
+    </select>
+    <input type="button" value="Change" ng-click="ChangeRowStatus_Firewall()"/>
+    
+    <br />
+
+    <input type="button" value="Test progressbar 2nd entry - Build" ng-click="TestProgressbar()"/>
+
+     <br />
+
+     <input type="button" value="Test chart 3rd entry - Unit Test" ng-click="TestChart()"/>
+
+     <br />
+
+</body>
+</html>
+

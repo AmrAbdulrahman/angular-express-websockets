@@ -1,0 +1,50 @@
+﻿
+
+/**********************************
+	Mixins
+**********************************/
+
+@defaultAnimationTime: 0.5s;
+@defaultAnimationProperty: all;
+@defaultAnimationFunction: ease;
+
+.Transition(@property: @defaultAnimationProperty, @time: @defaultAnimationTime, @function: @defaultAnimationFunction)
+{
+	-webkit-transition: @property @time @function;
+	-moz-transition: @property @time @function;
+	-o-transition: @property @time @function;
+    transition: @property @time @function;
+}
+
+.Gradiant(@startColor, @endColor:#fff)
+{
+	/*Background*/
+	background: @startColor;
+	background: -moz-linear-gradient(11deg, @startColor 0%, @endColor 50%);
+	background: -webkit-linear-gradient(11deg, @startColor 0%, @endColor 50%);
+	background: -o-linear-gradient(11deg, @startColor 0%, @endColor 50%);
+	background: -ms-linear-gradient(11deg, @startColor 0%, @endColor 50%);
+	background: linear-gradient(101deg, @startColor 0%, @endColor 50%);
+}
+
+.Border(@color)
+{
+	/*Border*/
+	border-width: 1px;
+	border-style: solid;
+	border-color: @color;	
+}
+
+.Shadow
+{
+	-webkit-box-shadow: 3px 3px 7px 0px rgba(50, 50, 50, 0.75);
+	-moz-box-shadow:    3px 3px 7px 0px rgba(50, 50, 50, 0.75);
+	box-shadow:         3px 3px 7px 0px rgba(50, 50, 50, 0.75);
+}
+
+.Square(@boxside)
+{
+	width: @boxside;
+	height: @boxside;
+}
+

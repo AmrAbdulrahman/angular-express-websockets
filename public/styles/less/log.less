@@ -1,0 +1,59 @@
+﻿
+@gray: #111;
+@green: #0f0;
+
+#logs
+{
+	position: fixed;
+	width: 200px;
+	height: 600px;
+	right:  0px;
+	top:  50px;
+	background-color: yellow;
+	color:  white;
+	background-color: lighten(@gray, 50%);
+	border-radius: 10px 0px 0px 10px;
+
+	#logHeader
+    {
+		
+		//padding: 10px 0px 0px 10px;
+    	background-color: lighten(@gray, 25%);
+		border-radius: 10px 0px 0px 0px;
+		color:  white;
+		font-weight: bold;
+		font-size: 15px;
+		height: 40px;
+		width: 100%;
+		top:  0px;
+
+		.text
+        {
+			position: absolute;
+        	margin: 10px 0px 0px 10px;
+        }
+    }
+
+	#logContent
+    {
+    	height: 560px;
+		overflow-y: scroll;
+
+		.log
+        {
+			margin: 5px 0px 5px 5px;
+			font-size: 12px;
+
+			.time
+			{
+        		color: @green;
+				font-weight: bold;	
+			}
+
+			.message
+			{
+        		
+			}
+		}
+    }
+}

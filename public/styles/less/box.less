@@ -1,0 +1,83 @@
+﻿
+@import "mixins.less";
+@import "theme.less";
+/**********************************
+	Constants
+***********************************/
+
+@boxside: 170px;
+
+
+
+/**********************************
+	Styling
+**********************************/
+
+.Box {
+	.Square(@boxside);
+	float: left;
+	margin-left: 20px;
+	margin-top: 20px;
+
+	//.Transition;
+	.Shadow;
+
+	&:hover
+    {
+		cursor: pointer;
+	}
+
+	.BoxTitle 
+	{
+		position: relative;
+		width: 100%;
+		height: 15%;
+		
+		.BoxTitleText {
+			position: absolute;
+			top: 6px;
+			left: 6px;
+			font-weight: bold;
+		} // end of .BoxTitleText
+	} // end of .BoxTitle
+
+	.BoxContentWrapper
+    {
+    	position: relative;
+		width: 100%;
+		height: 100%;
+    }
+
+	.PendingWrapper
+    {
+    	margin-left: 43%;
+		margin-top: 30%;
+    }
+
+	.CancelledWrapper
+    {
+		margin-top: 25%;
+
+    	.Cancelled
+        {
+			display: block;
+			width: 100%;
+        	font-size: 13px;
+			font-weight: bold;
+			color:  @redFont;
+			text-align: center;
+        }
+
+		.EntryFailed
+        {
+			display: block;
+			width: 100%;
+			font-size: 10px;
+			text-align: center;
+        }
+    }
+
+} // end of .Box
+
+
+
