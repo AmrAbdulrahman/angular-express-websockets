@@ -1,4 +1,7 @@
 ﻿
+
+@import "mixins.less";
+
 @gray: #111;
 @green: #0f0;
 @yellow: #FFFF00;
@@ -9,12 +12,18 @@
 	position: fixed;
 	width: 200px;
 	height: 600px;
-	right:  0px;
+	right: -150px;
 	top:  50px;
 	background-color: yellow;
 	color:  white;
 	background-color: lighten(@gray, 50%);
 	border-radius: 10px 0px 0px 10px;
+	.Transition;
+
+	&:hover
+    {
+		right: 0px;	
+    }
 
 	#logHeader
     {
