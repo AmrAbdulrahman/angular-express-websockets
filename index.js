@@ -67,28 +67,6 @@ wss.broadcast = function(event, data) {
 	}
 };
 
-
-var eventHandlers = {};	
-wss.onn = function(event, handler)
-{
-	eventHandlers[event] = handler;
-};
-	
-wss.onmessage = function (message) {
-	//console.log('good');
-	var jsonData = JSON.parse(message.data);
-
-	var event = jsonData.event;
-	var data = jsonData.data;
-
-	eventHandlers[event](data);
-};
-
-wss.onn('askfor:row', function(data){
-	//console.log('hi');
-	addRow();
-});
-	
 	
 wss.on("connection", function(ws) {
 
@@ -131,7 +109,7 @@ setInterval(function() {
 	}
 	else
 	{
-		row = rowFactory.getRow(rowIdSeed, 'Firewall', 'fw' + rowIdSeed, '', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending');
+		row = rowFactory.getRow(rowIdSeed, 'Firewall', 'fw' + rowIdSeed, 'name' + rowIdSeed, 'Pending', 'Pending', 'Pending', 'Pending', 'Pending');
 	}
 	rowIdSeed++;
 	
