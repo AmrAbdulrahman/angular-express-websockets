@@ -1,5 +1,5 @@
 ﻿
 var config =
 {
-    serverUrl: 'http://jobvite-task.herokuapp.com'
+    webSocketServerUrl: 'ws://jobvitetasksubmission.herokuapp.com/'
 }

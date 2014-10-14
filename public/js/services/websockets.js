@@ -6,7 +6,7 @@ listApp.service('websockets', function () {
     var wsClass =
     {
         connect: function () {
-            var host = location.origin.replace(/^http/, 'ws');
+            var host = config.webSocketServerUrl;
             var ws = new WebSocket(host);
             var eventHandlers = {};
 
