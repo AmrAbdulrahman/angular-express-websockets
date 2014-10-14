@@ -388,47 +388,7 @@
         </div>
     </div>
 
-
     <popup></popup>
-
-    <br />
-    <br />
-
-    <input type="button" value="Pull row from the server (for testing only)" ng-click="PullNewRow()">
-    <br />
-    <input type="button" value="Add sample row (client side, random duplicate of existing rows)" ng-click="AddNewRow()"/>
-    <br />
-
-
-    Change row index (Build)
-    <input type="text" ng-model="indexToBeChanged_Build" placeholder="zero based index" value="0" />
-    to
-    <select ng-model="newBuildStatus">
-        <option ng-repeat="type in BuildStatusType" ng-init="Completed">{{type}}</option>
-    </select>
-    <input type="button" value="Change" ng-click="ChangeRowStatus_Build()"/>
-
-    (invalid input will be just neglected)
-
-    <br />
-
-    Change row index (Firewall)
-    <input type="text" ng-model="indexToBeChanged_Firewall" placeholder="zero based index" value="0" />
-    to
-    <select ng-model="newFirewallStatus">
-        <option ng-repeat="type in FirewallStatusType" ng-init="Completed">{{type}}</option>
-    </select>
-    <input type="button" value="Change" ng-click="ChangeRowStatus_Firewall()"/>
-    
-    <br />
-
-    <input type="button" value="Test progressbar 2nd entry - Build" ng-click="TestProgressbar()"/>
-
-     <br />
-
-     <input type="button" value="Test chart 3rd entry - Unit Test" ng-click="TestChart()"/>
-
-     <br />
 
 </body>
 </html>

@@ -5,7 +5,7 @@
     listApp.controller('listController', ['$scope', '$rootScope', '$animate', '$timeout', 'literals', 'sample', 'lookups', 'socketio', 'websockets', function ($scope, $rootScope, $animate, $timeout, literals, sample, lookups, socketio, websockets) {
 
         // services
-        $scope.rows = sample.list;
+        $scope.rows = [];// sample.list;
         $scope.rowFactory = sample.factory;
         $scope.literals = literals;
         $scope.lookups = lookups;
@@ -26,7 +26,7 @@
 
         angular.element(document).ready(function () {
             $scope.Log('server is configured to send a new entry every 20 seconds', $scope.LogColor.Yellow);
-            $scope.Log('server is configured to update random entry every 5 seconds', $scope.LogColor.Orange);
+            $scope.Log('server is configured to update random entry every 3 seconds', $scope.LogColor.Orange);
         });
 
 
@@ -44,7 +44,7 @@
         });
 
         $scope.ws.on('update:row', function (data) {
-            $scope.Log('(websockets) update:row, Id: ' + data.row.Id, $scope.LogColor.Orange);
+            $scope.Log('(websockets) update:row, Id: ' + data.row.Id + ' ' + data.msg, $scope.LogColor.Orange);
             $scope.UpdateRow(data.row);
             $scope.$apply();
         });
@@ -309,4 +309,4 @@
     } ]); // end of controller
 
 
-})();                                                         // wrapper
+})();                                                          // wrapper

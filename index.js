@@ -27,14 +27,25 @@ var rowIdSeed = 20;
 
 var rowsArray =
 [
+	//rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1235', '', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending'),
+	//rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1236', '', 'Running', 'Completed', 'Running', 'Pending', 'Pending'),
+	//rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1237', '', 'Completed', 'Completed', 'Completed', 'Completed', 'Completed'),
+	//rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1238', '', 'Failed', 'Completed', 'Failed', 'Cancelled', 'Cancelled'),
+	//rowFactory.getRow(rowIdSeed++, 'Firewall', '432462', 'amr', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending'),
+	//rowFactory.getRow(rowIdSeed++, 'Firewall', '432463', 'no2a','Running', 'Completed', 'Running', 'Running', 'Pending'),
+	//rowFactory.getRow(rowIdSeed++, 'Firewall', '432464', 'samy','Accepted', 'Completed', 'Completed', 'Completed', 'Completed'),
+	//rowFactory.getRow(rowIdSeed++, 'Firewall', '432465','jtuck', 'Rejected', 'Completed', 'Failed', 'Cancelled', 'Cancelled')
+	
+	
 	rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1235', '', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending'),
-	rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1236', '', 'Running', 'Completed', 'Running', 'Pending', 'Pending'),
-	rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1237', '', 'Completed', 'Completed', 'Completed', 'Completed', 'Completed'),
-	rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1238', '', 'Failed', 'Completed', 'Failed', 'Cancelled', 'Cancelled'),
+	rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1236', '', 'Pending', 'Completed', 'Running', 'Pending', 'Pending'),
+	rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1237', '', 'Pending', 'Completed', 'Completed', 'Completed', 'Completed'),
+	rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1238', '', 'Pending', 'Completed', 'Failed', 'Cancelled', 'Cancelled'),
 	rowFactory.getRow(rowIdSeed++, 'Firewall', '432462', 'amr', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending'),
-	rowFactory.getRow(rowIdSeed++, 'Firewall', '432463', 'no2a','Running', 'Completed', 'Running', 'Running', 'Pending'),
-	rowFactory.getRow(rowIdSeed++, 'Firewall', '432464', 'samy','Accepted', 'Completed', 'Completed', 'Completed', 'Completed'),
-	rowFactory.getRow(rowIdSeed++, 'Firewall', '432465','jtuck', 'Rejected', 'Completed', 'Failed', 'Cancelled', 'Cancelled')
+	rowFactory.getRow(rowIdSeed++, 'Firewall', '432463', 'no2a','Pending', 'Completed', 'Running', 'Running', 'Pending'),
+	rowFactory.getRow(rowIdSeed++, 'Firewall', '432464', 'samy','Pending', 'Completed', 'Completed', 'Completed', 'Completed'),
+	rowFactory.getRow(rowIdSeed++, 'Firewall', '432465','jtuck', 'Pending', 'Completed', 'Failed', 'Cancelled', 'Cancelled')
+	
 ]; // end of rows array
 
 
@@ -97,7 +108,49 @@ setInterval(function() {
 
 // adding new rows randomly
 setInterval(function() {
+
+	var luckyIndex = utils.randomInt() % rowsArray.length;
+	var row = rowsArray[luckyIndex];
+	var msg = '';
+	
+	if(row.Status == 'Pending')
+	{
+		row.Status = 'Running';
+		msg = 'pending -> running';
+	}
+	else if(row.Status == 'Running')
+	{
+		var hasFailed = utils.randomInt() % 2 == 0;
+		
+		if(hasFailed)
+		{
+			if(row.Type == 'Build')
+			{
+				row.Status = 'Failed';
+				msg = 'running -> failed';
+			}
+			else
+			{
+				row.Status = 'Rejected';
+				msg = 'running -> rejected';
+			}
+		}
+		else
+		{
+			if(row.Type == 'Build')
+			{
+				row.Status = 'Completed';
+				msg = 'running -> completed';
+			}
+			else
+			{
+				row.Status = 'Accepted';
+				msg = 'running -> accepted';
+			}				
+		}
+	}
+	
 	wss.broadcast('update:row', { // broadcast
-		row: rowsArray[0]
+		row: row, msg:msg
 	});
-}, 5000);
+}, 3000);
