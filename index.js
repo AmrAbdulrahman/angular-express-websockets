@@ -98,6 +98,7 @@ setInterval(function() {
 	var randomRowIndex = utils.randomInt() % rowsArray.length;
 	var row = rowsArray[randomRowIndex]
 	row.Id = rowIdSeed++; // give it a new Id
+	row.Status = 'Pending';
 	wss.broadcast('new:row', { // broadcast
 		row: row
 	});
@@ -148,6 +149,11 @@ setInterval(function() {
 				msg = 'running -> accepted';
 			}				
 		}
+	}
+	else // is completed or failed
+	{
+		msg = 'resetting ' + row.Status + ' -> pending';
+		row.Status = 'Pending';
 	}
 	
 	wss.broadcast('update:row', { // broadcast
