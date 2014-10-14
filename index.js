@@ -86,10 +86,10 @@ wss.on("connection", function(ws) {
 setInterval(function() {
 	
 	// remove random rows
-	if(rowsArray.length > 30)
+	if(rowsArray.length > 40)
 	{
 		wss.broadcast('remove:row', { // broadcast
-			row: rowsArray[30]
+			row: rowsArray[40]
 		});
 	}
 
@@ -112,7 +112,7 @@ setInterval(function() {
 		
 	rowsArray.splice(0,0,row); // add row to the list
 	
-}, 5000);
+}, 20000);
 
 // adding new rows randomly
 setInterval(function() {
@@ -191,5 +191,5 @@ setInterval(function() {
 		});
 		
 	}
-}, 3000);
+}, 10000);
 	
