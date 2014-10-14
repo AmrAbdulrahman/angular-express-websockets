@@ -47,10 +47,13 @@ listApp.directive('progressBar', ['$timeout', 'lookups', function ($timeout, loo
                     $scope.updateMe();
                 }
             });
-            
 
-            $scope.updateMe = function()
-            {
+
+            $scope.updateMe = function () {
+                innerElem.removeClass("PendingProgressBar");
+                innerElem.removeClass("CompletedProgressBar");
+                innerElem.removeClass("FailedProgressBar");
+
                 var statusValue = innerElem.attr("status");
                 var percentageValue = parseInt(innerElem.attr("percentage"));
 
@@ -59,6 +62,7 @@ listApp.directive('progressBar', ['$timeout', 'lookups', function ($timeout, loo
 
                 // handle 'done', 'failed' and 'pending' cases
                 if (statusValue != lookups.BoxStatusType.Running) {
+
                     // unfortunately, jq-ui defines the progressbar style by inline 'width'
                     // remove jq-ui element style, because it overrides css styling
                     innerElem.children(".ui-progressbar-value").removeAttr("style");

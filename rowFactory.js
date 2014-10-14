@@ -14,7 +14,7 @@ module.exports = {
                 Status: status,
                 Metrics: {
                     Status: metricsStatus, // Status is one of [Pending, Running, Completed, Failed]
-                    Percentage: utils.randomInt(),
+                    Percentage: 0,
                     Test: utils.randomInt(),
                     Maintability: utils.randomInt(),
                     Security: utils.randomInt(),
@@ -22,12 +22,12 @@ module.exports = {
                 },
                 Build: {
                     Status: buildStatus,
-                    Percentage: utils.randomInt(),
+                    Percentage: 0,
                     Datetime: new Date()
                 },
                 UnitTest: {
                     Status: unitTestStatus,
-                    Percentage: utils.randomInt(),
+                    Percentage: 0,
                     SuccessCount: utils.randomInt()+ 10,
                     FailureCount: utils.randomInt()+ 10,
                     TestsPassed: utils.randomInt(),
@@ -35,7 +35,7 @@ module.exports = {
                 },
                 FunctionalTest: {
                     Status: functionalTestStatus,
-                    Percentage: utils.randomInt(),
+                    Percentage: 0,
                     SuccessCount: utils.randomInt() + 10,
                     FailureCount: utils.randomInt() + 10,
                     TestsPassed: utils.randomInt(),

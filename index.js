@@ -85,99 +85,111 @@ wss.on("connection", function(ws) {
 // adding new rows randomly
 setInterval(function() {
 	
-	if(rowsArray.length == 20)
+	// remove random rows
+	if(rowsArray.length > 30)
 	{
-		for(var i=0; i<10; i++)
-		{
-			var randomRowIndex = utils.randomInt() % rowsArray.length;
-			rowsArray.splice(randomRowIndex, 1); // remove 10 elements, as the server is continously adding rows infinitely 
-		}
+		wss.broadcast('remove:row', { // broadcast
+			row: rowsArray[30]
+		});
 	}
 
+	var build = utils.randomInt() % 2 == 0;
+	var row = null;
+
+	if(build)
+	{
+		row = rowFactory.getRow(rowIdSeed, 'Build', 'Tenrox-R1_' + rowIdSeed, '', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending');
+	}
+	else
+	{
+		row = rowFactory.getRow(rowIdSeed, 'Firewall', 'fw' + rowIdSeed, '', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending');
+	}
+	rowIdSeed++;
 	
-	var randomRowIndex = utils.randomInt() % rowsArray.length;
-	var row = rowsArray[randomRowIndex]
-	row.Id = rowIdSeed++; // give it a new Id
-	row.Status = 'Pending';
 	wss.broadcast('new:row', { // broadcast
 		row: row
 	});
-	
+		
 	rowsArray.splice(0,0,row); // add row to the list
 	
-}, 20000);
+}, 5000);
 
 // adding new rows randomly
 setInterval(function() {
 
-	var luckyIndex = utils.randomInt() % rowsArray.length;
-	var row = rowsArray[luckyIndex];
-	var msg = '';
-	
-	if(row.Status == 'Pending')
+	for(var i=0; i<rowsArray.length; i++)
 	{
-		row.Status = 'Running';
-		row.Metrics.Status = utils.randomInt() % 2 == 0 ? 'Running' : 'Pending';
-		row.Build.Status = utils.randomInt() % 2 == 0 ? 'Running' : 'Pending';;
-		row.UnitTest.Status = utils.randomInt() % 2 == 0 ? 'Running' : 'Pending';;
-		row.FunctionalTest.Status = utils.randomInt() % 2 == 0 ? 'Running' : 'Pending';;	
-		msg = 'pending -> running';
-	}
-	else if(row.Status == 'Running')
-	{
-		var hasFailed = utils.randomInt() % 2 == 0;
+		var row = rowsArray[i];
+		var msg = '';
 		
-		if(hasFailed)
+		if(row.Status == 'Pending')
 		{
-			if(row.Type == 'Build')
-			{
-				row.Status = 'Failed';
-				row.Metrics.Status = 'Completed';
-				row.Build.Status = 'Failed';
-				row.UnitTest.Status = 'Failed';
-				row.FunctionalTest.Status = 'Failed';
-				msg = 'running -> failed';
-			}
-			else
-			{
-				row.Status = 'Rejected';
-				row.Metrics.Status = 'Completed';
-				row.Build.Status = 'Completed';
-				row.UnitTest.Status = 'Failed';
-				row.FunctionalTest.Status = 'Failed';
-				msg = 'running -> rejected';
-			}
+			row.Status = 'Running';
+			row.Metrics.Status = utils.randomInt() % 2 == 0 ? 'Running' : 'Pending';
+			row.Build.Status = utils.randomInt() % 2 == 0 ? 'Running' : 'Pending';;
+			row.UnitTest.Status = utils.randomInt() % 2 == 0 ? 'Running' : 'Pending';;
+			row.FunctionalTest.Status = utils.randomInt() % 2 == 0 ? 'Running' : 'Pending';;	
+			msg = 'pending -> running';
 		}
-		else // accepted or completed
-		{
-			if(row.Type == 'Build')
+		else if(row.Status == 'Running')
+		{	
+			
+			rowsArray[i].Metrics.Percentage += utils.randomInt() % 30;
+			rowsArray[i].Build.Percentage += utils.randomInt() % 30;
+			rowsArray[i].UnitTest.Percentage += utils.randomInt() % 30;
+			rowsArray[i].FunctionalTest.Percentage += utils.randomInt() % 30;
+			
+			if(row.Metrics.Percentage > 80 && row.Build.Percentage > 80 && row.UnitTest.Percentage > 80 && row.FunctionalTest.Percentage > 80)
 			{
-				row.Status = 'Completed';
-				msg = 'running -> completed';
-			}
-			else
-			{
-				row.Status = 'Accepted';
-				msg = 'running -> accepted';
-			}
+				var hasFailed = utils.randomInt() % 2 == 0;
+			
+				
+				if(hasFailed)
+				{
+					if(row.Type == 'Build')
+					{
+						row.Status = 'Failed';
+						row.Metrics.Status = 'Completed';
+						row.Build.Status = 'Failed';
+						row.UnitTest.Status = 'Failed';
+						row.FunctionalTest.Status = 'Failed';
+						msg = 'running -> failed';
+					}
+					else
+					{
+						row.Status = 'Rejected';
+						row.Metrics.Status = 'Completed';
+						row.Build.Status = 'Completed';
+						row.UnitTest.Status = 'Failed';
+						row.FunctionalTest.Status = 'Failed';
+						msg = 'running -> rejected';
+					}
+				}
+				else // accepted or completed
+				{
+					if(row.Type == 'Build')
+					{
+						row.Status = 'Completed';
+						msg = 'running -> completed';
+					}
+					else
+					{
+						row.Status = 'Accepted';
+						msg = 'running -> accepted';
+					}
 
-			row.Metrics.Status = 'Completed';
-			row.Build.Status = 'Completed';
-			row.UnitTest.Status = 'Completed';
-			row.FunctionalTest.Status = 'Completed';			
+					row.Metrics.Status = 'Completed';
+					row.Build.Status = 'Completed';
+					row.UnitTest.Status = 'Completed';
+					row.FunctionalTest.Status = 'Completed';			
+				}
+			}
 		}
+		
+		wss.broadcast('update:row', { // broadcast
+			row: row, msg: msg
+		});
+		
 	}
-	else // is completed or failed
-	{
-		msg = 'resetting ' + row.Status + ' -> pending';
-		row.Status = 'Pending';
-		row.Metrics.Status = 'Pending';
-		row.Build.Status = 'Pending';
-		row.UnitTest.Status = 'Pending';
-		row.FunctionalTest.Status = 'Pending';		
-	}
-	
-	wss.broadcast('update:row', { // broadcast
-		row: row, msg:msg
-	});
 }, 3000);
+	

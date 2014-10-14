@@ -5,7 +5,7 @@
     listApp.controller('listController', ['$scope', '$rootScope', '$animate', '$timeout', 'literals', 'sample', 'lookups', 'socketio', 'websockets', function ($scope, $rootScope, $animate, $timeout, literals, sample, lookups, socketio, websockets) {
 
         // services
-        $scope.rows = [];// sample.list;
+        $scope.rows = []; // sample.list;
         $scope.rowFactory = sample.factory;
         $scope.literals = literals;
         $scope.lookups = lookups;
@@ -46,6 +46,17 @@
         $scope.ws.on('update:row', function (data) {
             $scope.Log('(websockets) update:row, Id: ' + data.row.Id + ' ' + data.msg, $scope.LogColor.Orange);
             $scope.UpdateRow(data.row);
+            $scope.$apply();
+        });
+
+        $scope.ws.on('remove:row', function (data) {
+            $scope.Log('(websockets) remove:row, Id: ' + data.row.Id);
+            var rowIndex = $scope.GetRowIndexById(data.row.Id);
+            $scope.rows.splice(rowIndex); // remove element
+
+            if ($scope.currentActiveRow == rowIndex)
+                $scope.currentActiveRow = -1;
+
             $scope.$apply();
         });
 
@@ -96,7 +107,6 @@
             var rowIndex = $scope.GetRowIndexById(row.Id);
 
             if (rowIndex == -1) {
-                $scope.Log('Oops! updating row that is not even exist!');
                 return;
             }
 
@@ -123,14 +133,9 @@
         $scope.LogColor = { Yellow: 'yellow', Orange: 'orange' };
         $scope.logs = [];
         $scope.Log = function (message, color) {
-            console.log(color);
-
             if (color == undefined) {
-                console.log('undef');
                 color = 'white';
             }
-
-            console.log(color);
 
             $scope.logs.splice(0, 0, { counter: $scope.logs.length + 1, time: new Date(), message: message, color: color });
         }
@@ -309,4 +314,4 @@
     } ]); // end of controller
 
 
-})();                                                          // wrapper
+})();                                                            // wrapper
