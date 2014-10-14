@@ -38,13 +38,13 @@ var rowsArray =
 	
 	
 	rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1235', '', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending'),
-	rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1236', '', 'Pending', 'Completed', 'Running', 'Pending', 'Pending'),
-	rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1237', '', 'Pending', 'Completed', 'Completed', 'Completed', 'Completed'),
-	rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1238', '', 'Pending', 'Completed', 'Failed', 'Cancelled', 'Cancelled'),
+	rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1236', '', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending'),
+	rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1237', '', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending'),
+	rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1238', '', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending'),
 	rowFactory.getRow(rowIdSeed++, 'Firewall', '432462', 'amr', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending'),
-	rowFactory.getRow(rowIdSeed++, 'Firewall', '432463', 'no2a','Pending', 'Completed', 'Running', 'Running', 'Pending'),
-	rowFactory.getRow(rowIdSeed++, 'Firewall', '432464', 'samy','Pending', 'Completed', 'Completed', 'Completed', 'Completed'),
-	rowFactory.getRow(rowIdSeed++, 'Firewall', '432465','jtuck', 'Pending', 'Completed', 'Failed', 'Cancelled', 'Cancelled')
+	rowFactory.getRow(rowIdSeed++, 'Firewall', '432463', 'no2a','Pending', 'Pending', 'Pending', 'Pending', 'Pending'),
+	rowFactory.getRow(rowIdSeed++, 'Firewall', '432464', 'samy','Pending', 'Pending', 'Pending', 'Pending', 'Pending'),
+	rowFactory.getRow(rowIdSeed++, 'Firewall', '432465','jtuck', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending')
 	
 ]; // end of rows array
 
@@ -117,6 +117,10 @@ setInterval(function() {
 	if(row.Status == 'Pending')
 	{
 		row.Status = 'Running';
+		row.Metrics.Status = utils.randomInt() % 2 == 0 ? 'Running' : 'Pending';
+		row.Build.Status = utils.randomInt() % 2 == 0 ? 'Running' : 'Pending';;
+		row.UnitTest.Status = utils.randomInt() % 2 == 0 ? 'Running' : 'Pending';;
+		row.FunctionalTest.Status = utils.randomInt() % 2 == 0 ? 'Running' : 'Pending';;	
 		msg = 'pending -> running';
 	}
 	else if(row.Status == 'Running')
@@ -128,15 +132,23 @@ setInterval(function() {
 			if(row.Type == 'Build')
 			{
 				row.Status = 'Failed';
+				row.Metrics.Status = 'Completed';
+				row.Build.Status = 'Failed';
+				row.UnitTest.Status = 'Failed';
+				row.FunctionalTest.Status = 'Failed';
 				msg = 'running -> failed';
 			}
 			else
 			{
 				row.Status = 'Rejected';
+				row.Metrics.Status = 'Completed';
+				row.Build.Status = 'Completed';
+				row.UnitTest.Status = 'Failed';
+				row.FunctionalTest.Status = 'Failed';
 				msg = 'running -> rejected';
 			}
 		}
-		else
+		else // accepted or completed
 		{
 			if(row.Type == 'Build')
 			{
@@ -147,13 +159,22 @@ setInterval(function() {
 			{
 				row.Status = 'Accepted';
 				msg = 'running -> accepted';
-			}				
+			}
+
+			row.Metrics.Status = 'Completed';
+			row.Build.Status = 'Completed';
+			row.UnitTest.Status = 'Completed';
+			row.FunctionalTest.Status = 'Completed';			
 		}
 	}
 	else // is completed or failed
 	{
 		msg = 'resetting ' + row.Status + ' -> pending';
 		row.Status = 'Pending';
+		row.Metrics.Status = 'Pending';
+		row.Build.Status = 'Pending';
+		row.UnitTest.Status = 'Pending';
+		row.FunctionalTest.Status = 'Pending';		
 	}
 	
 	wss.broadcast('update:row', { // broadcast

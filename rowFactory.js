@@ -28,16 +28,16 @@ module.exports = {
                 UnitTest: {
                     Status: unitTestStatus,
                     Percentage: utils.randomInt(),
-                    SuccessCount: utils.randomInt(),
-                    FailureCount: utils.randomInt(),
+                    SuccessCount: utils.randomInt()+ 10,
+                    FailureCount: utils.randomInt()+ 10,
                     TestsPassed: utils.randomInt(),
                     CodeCovered: utils.randomInt()
                 },
                 FunctionalTest: {
                     Status: functionalTestStatus,
                     Percentage: utils.randomInt(),
-                    SuccessCount: utils.randomInt(),
-                    FailureCount: utils.randomInt(),
+                    SuccessCount: utils.randomInt() + 10,
+                    FailureCount: utils.randomInt() + 10,
                     TestsPassed: utils.randomInt(),
                     CodeCovered: utils.randomInt()
                 }
