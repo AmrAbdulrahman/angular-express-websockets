@@ -74,7 +74,7 @@ listApp.directive('progressBar', ['$timeout', 'lookups', function ($timeout, loo
                 innerElem.addClass(statusCssClass);
             }
 
-            $timeout(function () {
+            var timer = $timeout(function () {
                 var statusValue = innerElem.attr("status");
                 var percentageValue = parseInt(innerElem.attr("percentage"));
 
@@ -95,6 +95,13 @@ listApp.directive('progressBar', ['$timeout', 'lookups', function ($timeout, loo
                 innerElem.addClass(statusCssClass);
 
                 $scope.initialized = true;
+            });
+
+            $scope.$on("$destroy", function (event) {
+                if ($scope.initialized) {
+                    $timeout.cancel(timer);
+                    $("#templateID", element).progressbar("destroy");
+                }
             });
 
 

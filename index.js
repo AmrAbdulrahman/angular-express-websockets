@@ -51,6 +51,7 @@ var rowsArray =
 
 
 wss.broadcast = function(event, data) {
+    //console.log("broadcasting %o to %o (%o)", event, this.clients.length, data);
 	for (var i =0; i<this.clients.length; i++)
 	{
 		try
@@ -66,11 +67,34 @@ wss.broadcast = function(event, data) {
 	}
 };
 
+
+var eventHandlers = {};	
+wss.onn = function(event, handler)
+{
+	eventHandlers[event] = handler;
+};
+	
+wss.onmessage = function (message) {
+	//console.log('good');
+	var jsonData = JSON.parse(message.data);
+
+	var event = jsonData.event;
+	var data = jsonData.data;
+
+	eventHandlers[event](data);
+};
+
+wss.onn('askfor:row', function(data){
+	//console.log('hi');
+	addRow();
+});
+	
+	
 wss.on("connection", function(ws) {
 
 	ws.emit = function(event, data)
 	{
-		ws.send(JSON.stringify({event:event, data:data}), function() {});
+		return ws.send(JSON.stringify({event:event, data:data}), function() {});
 	}
 	
 	console.log("websocket connection open");
@@ -79,18 +103,23 @@ wss.on("connection", function(ws) {
   
 	ws.on("close", function() {
 		console.log("websocket connection close");
-	})
+	});	
 });
 
 // adding new rows randomly
+//function addRow()
 setInterval(function() {
-	
+	if (wss.clients.length == 0) return;
+
+	console.log("add or remove rows");
 	// remove random rows
-	if(rowsArray.length > 40)
+	if(rowsArray.length > 20)
 	{
 		wss.broadcast('remove:row', { // broadcast
-			row: rowsArray[40]
+			row: rowsArray[20]
 		});
+		
+		rowsArray.splice(20);
 	}
 
 	var build = utils.randomInt() % 2 == 0;
@@ -112,11 +141,14 @@ setInterval(function() {
 		
 	rowsArray.splice(0,0,row); // add row to the list
 	
-}, 20000);
+}, 10000);
 
-// adding new rows randomly
-setInterval(function() {
-
+// update rows
+//function updateRows(){
+setInterval(function(){
+	if (wss.clients.length == 0) return;
+	
+	console.log("update rows");
 	for(var i=0; i<rowsArray.length; i++)
 	{
 		var row = rowsArray[i];
@@ -134,10 +166,10 @@ setInterval(function() {
 		else if(row.Status == 'Running')
 		{	
 			
-			rowsArray[i].Metrics.Percentage += utils.randomInt() % 30;
-			rowsArray[i].Build.Percentage += utils.randomInt() % 30;
-			rowsArray[i].UnitTest.Percentage += utils.randomInt() % 30;
-			rowsArray[i].FunctionalTest.Percentage += utils.randomInt() % 30;
+			row.Metrics.Percentage += utils.randomInt() % 30;
+			row.Build.Percentage += utils.randomInt() % 30;
+			row.UnitTest.Percentage += utils.randomInt() % 30;
+			row.FunctionalTest.Percentage += utils.randomInt() % 30;
 			
 			if(row.Metrics.Percentage > 80 && row.Build.Percentage > 80 && row.UnitTest.Percentage > 80 && row.FunctionalTest.Percentage > 80)
 			{
@@ -191,5 +223,4 @@ setInterval(function() {
 		});
 		
 	}
-}, 10000);
-	
+}, 5000);

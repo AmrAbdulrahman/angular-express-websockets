@@ -43,10 +43,20 @@
     <link href="styles/css/progress-bar.css" rel="stylesheet" />
     <link href="styles/css/icons.css" rel="stylesheet" type="text/css" />
     <link href="styles/css/log.css" rel="stylesheet" type="text/css" />
+
+    <script src="js/utils/sizeof.js" type="text/javascript"></script>
 </head>
 <body ng-controller="listController">
 
-   
+    <ul>
+        <li>
+            <a target="_blank" href="https://docs.google.com/file/d/0Bz8pV-tN2iDObHItZldCN3NDcEpDazNnVUdkZlFpWjJHaWln/edit">Requirement document</a>
+        </li>
+        <li>
+            <a href="">Code on github</a>
+        </li>
+    </ul>
+
     <div id="MainList">
 
         <div id="Header">
@@ -85,7 +95,7 @@
                     Blue: IsRunning(row),
                     Green: IsCompleted(row),
                     Red: IsFailed(row)}"
-                    class="Row">
+                 class="Row">
 
                 <div class="RowHeader" ng-click="Activate($index)">
                     <div class="Column ChangeListBuild">

@@ -8,19 +8,23 @@ listApp.service('websockets', function () {
         connect: function () {
             var host = location.origin.replace(/^http/, 'ws');
             var ws = new WebSocket(host);
-            var events = {};
+            var eventHandlers = {};
 
             ws.on = function (event, handler) {
-                events[event] = handler;
+                eventHandlers[event] = handler;
+            }
+
+            ws.Emit = function (event, data) {
+                this.send(JSON.stringify({ event: event, data: data }));
             }
 
             ws.onmessage = function (message) {
                 var jsonData = JSON.parse(message.data);
-
                 var event = jsonData.event;
                 var data = jsonData.data;
 
-                events[event](data);
+                if (eventHandlers[event])
+                    eventHandlers[event](data);
             };
 
             return ws;

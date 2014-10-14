@@ -25,8 +25,9 @@
         // code of both "web sockets" and "socket.io" are left for interview purposes
 
         angular.element(document).ready(function () {
-            $scope.Log('server is configured to send a new entry every 20 seconds', $scope.LogColor.Yellow);
-            $scope.Log('server is configured to update random entry every 3 seconds', $scope.LogColor.Orange);
+            $scope.Log('server is configured to send a new entry every 10 seconds', $scope.LogColor.Yellow);
+            $scope.Log('server is configured to update random entry every 5 seconds', $scope.LogColor.Orange);
+            $scope.Log('when the list size becomes 20, the server automatically removes the oldest one by one');
         });
 
 
@@ -60,7 +61,10 @@
             $scope.$apply();
         });
 
+        $scope.AskForRow = function () {
 
+            $scope.ws.Emit('askfor:row', {});
+        }
         /*****************************************************************************************
         Socket.io logic 
         *****************************************************************************************/
@@ -133,6 +137,7 @@
         $scope.LogColor = { Yellow: 'yellow', Orange: 'orange' };
         $scope.logs = [];
         $scope.Log = function (message, color) {
+            
             if (color == undefined) {
                 color = 'white';
             }
@@ -314,4 +319,4 @@
     } ]); // end of controller
 
 
-})();                                                            // wrapper
+})();                                                                    // wrapper

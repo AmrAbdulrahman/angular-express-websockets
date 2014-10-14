@@ -37,7 +37,7 @@ listApp.directive('accordion', ['$timeout', function ($timeout) {
                 }
             });
 
-            $timeout(function () {
+            var timer = $timeout(function () {
                 var headerSelector = $(element).attr("headerSelector");
 
                 $(element).accordion({
@@ -48,8 +48,16 @@ listApp.directive('accordion', ['$timeout', function ($timeout) {
                 });
 
                 $scope.initialized = true;
-
             });
+
+            $scope.$on("$destroy", function (event) {
+                if ($scope.initialized) {
+                    $timeout.cancel(timer);
+                    $(element).accordion('destroy');
+                }
+            });
+
+
         }
     };
 

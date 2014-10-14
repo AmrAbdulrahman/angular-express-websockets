@@ -42,10 +42,10 @@ listApp.directive('chart', ['$timeout', function ($timeout) {
                 $scope.chartId.update();
             }
 
-            $timeout(function () {
+            var timer = $timeout(function () {
                 var successCount = parseInt(innerElem.attr("successCount"));
                 var failureCount = parseInt(innerElem.attr("failureCount"));
-            
+
 
                 var pieData = [
 				    {
@@ -67,6 +67,13 @@ listApp.directive('chart', ['$timeout', function ($timeout) {
 
                 $scope.chartId = chartId_;
                 $scope.initialized = true;
+            });
+
+            $scope.$on("$destroy", function (event) {
+                if ($scope.initialized) {
+                    $timeout.cancel(timer);
+                    $scope.chartId.destroy();
+                }
             });
         }
     };
