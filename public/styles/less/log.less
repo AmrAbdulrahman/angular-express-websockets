@@ -1,6 +1,8 @@
 ﻿
 @gray: #111;
 @green: #0f0;
+@yellow: #FFFF00;
+@orange: #FF9900;
 
 #logs
 {
@@ -49,11 +51,16 @@
         		color: @green;
 				font-weight: bold;	
 			}
-
-			.message
-			{
-        		
-			}
 		}
+
+		.yellow
+        {
+            color:  @yellow;
+        }
+
+		.orange
+        {
+            color: lighten( @orange, 20%);
+        }
     }
 }

@@ -4,20 +4,6 @@
 
     listApp.controller('listController', ['$scope', '$rootScope', '$animate', '$timeout', 'literals', 'sample', 'lookups', 'socketio', 'websockets', function ($scope, $rootScope, $animate, $timeout, literals, sample, lookups, socketio, websockets) {
 
-        //var host = location.origin.replace(/^http/, 'ws')
-        //var ws = new WebSocket(host);
-        //ws.onmessage = function (event) {
-        //    $scope.log('got a message');
-        //    $scope.appl
-        //};
-
-        $scope.ws = websockets;
-        $scope.ws.onmessage = function (event) {
-            $scope.log('hi');
-            $scope.$apply();
-        };
-
-
         // services
         $scope.rows = sample.list;
         $scope.rowFactory = sample.factory;
@@ -30,58 +16,97 @@
         $scope.FirewallStatusType = lookups.FirewallStatusType;
         $scope.BoxStatusType = lookups.BoxStatusType;
 
-
-        // Socket logic ----------------------------------------------------
+        /*****************************************************************************************
+        WebSockets logic 
+        *****************************************************************************************/
+        // i had to use "web sockets" as i had some problems during deploying my app
+        // on "heroku.com", they don't support socket.io
+        // however, i've implemented my socket.io event listeners and tested them locally.
+        // code of both "web sockets" and "socket.io" are left for interview purposes
 
         angular.element(document).ready(function () {
-            $scope.log('server is configured to send a new entry every 10 seconds, and update entries randomly.');
+            $scope.Log('server is configured to send a new entry every 20 seconds', $scope.LogColor.Yellow);
+            $scope.Log('server is configured to update random entry every 5 seconds', $scope.LogColor.Orange);
         });
 
 
+        $scope.ws = websockets.connect();
+        $scope.ws.on('init', function (data) {
+            $scope.Log('(websockets) init, list size: ' + data.list.length);
+            $scope.InitRows(data.list);
+            $scope.$apply();
+        });
+
+        $scope.ws.on('new:row', function (data) {
+            $scope.Log('(websockets) new:row, Id: ' + data.row.Id, $scope.LogColor.Yellow);
+            $scope.AddRow(data.row);
+            $scope.$apply();
+        });
+
+        $scope.ws.on('update:row', function (data) {
+            $scope.Log('(websockets) update:row, Id: ' + data.row.Id, $scope.LogColor.Orange);
+            $scope.UpdateRow(data.row);
+            $scope.$apply();
+        });
+
+
+        /*****************************************************************************************
+        Socket.io logic 
+        *****************************************************************************************/
         socket = socketio.connect();
 
         socket.on('init', function (data) {
-
-            $scope.log('on init');
-
-            for (var i = 0; i < data.list.length; i++) {
-                $scope.rows.push(data.list[i]);
-            }
-
+            $scope.Log('(sockets.io) init');
+            $scope.InitRows(data.list);
             $scope.$apply();
         });
 
         socket.on('new:row', function (data) {
-
-            $scope.log('on new:row, Id: ' + data.row.Id);
-
-            // insert at top
-            $scope.rows.splice(0, 0, data.row);
-
-            // push it down
-            if ($scope.currentActiveRow != -1)
-                $scope.currentActiveRow++;
-
+            $scope.Log('(sockets.io) new:row, Id: ' + data.row.Id);
+            $scope.AddRow(data.row);
             $scope.$apply();
         });
 
         socket.on('update:row', function (data) {
 
-            $scope.log('on update:row');
+            $scope.Log('(sockets.io) update:row: ' + data.row.Id);
+            $scope.UpdateRow(data.row);
+            $scope.$apply();
+        });
 
-            var rowId = data.row.Id;
-            var rowIndex = $scope.GetRowIndexById(rowId);
+        /*****************************************************************************************
+        Data manipulation 
+        *****************************************************************************************/
+        $scope.InitRows = function (rows) {
+            for (var i = 0; i < rows.length; i++) {
+                $scope.rows.push(rows[i]);
+            }
+        }
+
+        $scope.AddRow = function (row) {
+            // insert at top
+            $scope.rows.splice(0, 0, row);
+
+            // push it down
+            if ($scope.currentActiveRow != -1)
+                $scope.currentActiveRow++;
+        }
+
+        $scope.UpdateRow = function (row) {
+            var rowIndex = $scope.GetRowIndexById(row.Id);
 
             if (rowIndex == -1) {
-                $scope.log('Oops! updating row that is not even exist!');
+                $scope.Log('Oops! updating row that is not even exist!');
                 return;
             }
 
-            // update
-            $scope.update($scope.rows[rowIndex], data.row);
+            var dest = $scope.rows[rowIndex];
 
-            $scope.$apply();
-        });
+            for (key in row) {
+                if (row.hasOwnProperty(key) && dest.hasOwnProperty(key))
+                    dest[key] = row[key];
+            }
+        }
 
         $scope.GetRowIndexById = function (rowId) {
             for (var rowIndex = 0; rowIndex < $scope.rows.length; rowIndex++) {
@@ -91,23 +116,28 @@
             return -1;
         }
 
-        $scope.update = function (dest, src) {
-            for (key in src) {
-                if (src.hasOwnProperty(key) && dest.hasOwnProperty(key))
-                    dest[key] = src[key];
+
+        /*****************************************************************************************
+        Logging
+        *****************************************************************************************/
+        $scope.LogColor = { Yellow: 'yellow', Orange: 'orange' };
+        $scope.logs = [];
+        $scope.Log = function (message, color) {
+            console.log(color);
+
+            if (color == undefined) {
+                console.log('undef');
+                color = 'white';
             }
+
+            console.log(color);
+
+            $scope.logs.splice(0, 0, { counter: $scope.logs.length + 1, time: new Date(), message: message, color: color });
         }
 
-        $scope.copy = function (dest, src) {
-            for (key in dest) {
-                if (src.hasOwnProperty(key) && dest.hasOwnProperty(key))
-                    dest[key] = src[key];
-            }
-        }
-        // -----------------------------------------------------------------
-
-
-        // Color CSS classes
+        /*****************************************************************************************
+        Color CSS classes
+        *****************************************************************************************/
         $scope.IsPending = function (row) {
             if (row.Type == $scope.RowType.Build)
                 return row.Status == $scope.BuildStatusType.Pending;
@@ -136,7 +166,9 @@
                 return row.Status == $scope.FirewallStatusType.Rejected;
         }
 
-        // Row icon CSS classes
+        /*****************************************************************************************
+        Row icon CSS classes
+        *****************************************************************************************/
         // Firewall
         $scope.IsPendingFirewall = function (row) {
             return row.Type == $scope.RowType.Firewall && row.Status == $scope.FirewallStatusType.Pending;
@@ -186,7 +218,7 @@
 
         // activate current tab to show/hide header progressbars
         $scope.currentActiveRow = -1;
-        $scope.activate = function (index) {
+        $scope.Activate = function (index) {
             // close row, by clicking on it, not by openning another row
             if (index == $scope.currentActiveRow) {
                 $scope.currentActiveRow = -1;
@@ -211,10 +243,7 @@
 
         ///////////////////////////////// testing ////////////////////////////////////////
 
-        $scope.logs = [];
-        $scope.log = function (message) {
-            $scope.logs.splice(0, 0, { counter: $scope.logs.length + 1, time: new Date(), message: message });
-        }
+
 
         // for testing purposes only
         $scope.PullNewRow = function () {
@@ -280,4 +309,4 @@
     } ]); // end of controller
 
 
-})();                              // wrapper
+})();                                                         // wrapper

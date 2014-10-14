@@ -11,25 +11,93 @@ app.get('/', function(request, res) {
   res.sendFile('public/index.html', {root: __dirname });
 })
 
-
+// http
 var server = http.createServer(app)
 server.listen(port)
-
 console.log("http server listening on %d", port)
 
+// web sockets
 var wss = new WebSocketServer({server: server})
 console.log("websocket server created")
 
+// rows logic
+var utils = require("./utils.js");
+var rowFactory = require("./rowFactory.js");
+var rowIdSeed = 20;
+
+var rowsArray =
+[
+	rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1235', '', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending'),
+	rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1236', '', 'Running', 'Completed', 'Running', 'Pending', 'Pending'),
+	rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1237', '', 'Completed', 'Completed', 'Completed', 'Completed', 'Completed'),
+	rowFactory.getRow(rowIdSeed++, 'Build', 'Tenrox-R1_1238', '', 'Failed', 'Completed', 'Failed', 'Cancelled', 'Cancelled'),
+	rowFactory.getRow(rowIdSeed++, 'Firewall', '432462', 'amr', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending'),
+	rowFactory.getRow(rowIdSeed++, 'Firewall', '432463', 'no2a','Running', 'Completed', 'Running', 'Running', 'Pending'),
+	rowFactory.getRow(rowIdSeed++, 'Firewall', '432464', 'samy','Accepted', 'Completed', 'Completed', 'Completed', 'Completed'),
+	rowFactory.getRow(rowIdSeed++, 'Firewall', '432465','jtuck', 'Rejected', 'Completed', 'Failed', 'Cancelled', 'Cancelled')
+]; // end of rows array
+
+
+
+wss.broadcast = function(event, data) {
+	for (var i =0; i<this.clients.length; i++)
+	{
+		try
+		{
+			this.clients[i].send(JSON.stringify({event: event, data:data}));
+		}
+		catch(ex)
+		{
+			console.log("Client unreachable!");
+			this.clients.splice(i, 1); // remove it
+			i--;
+		}
+	}
+};
+
 wss.on("connection", function(ws) {
-  var id = setInterval(function() {
-	console.log('sending a message');
-    ws.send(JSON.stringify(new Date()), function() {  })
-  }, 1000)
 
-  console.log("websocket connection open")
+	ws.emit = function(event, data)
+	{
+		ws.send(JSON.stringify({event:event, data:data}), function() {});
+	}
+	
+	console.log("websocket connection open");
 
-  ws.on("close", function() {
-    console.log("websocket connection close")
-    clearInterval(id)
-  })
-})
+	ws.emit('init', {list:rowsArray});
+  
+	ws.on("close", function() {
+		console.log("websocket connection close");
+	})
+});
+
+// adding new rows randomly
+setInterval(function() {
+	
+	if(rowsArray.length == 20)
+	{
+		for(var i=0; i<10; i++)
+		{
+			var randomRowIndex = utils.randomInt() % rowsArray.length;
+			rowsArray.splice(randomRowIndex, 1); // remove 10 elements, as the server is continously adding rows infinitely 
+		}
+	}
+
+	
+	var randomRowIndex = utils.randomInt() % rowsArray.length;
+	var row = rowsArray[randomRowIndex]
+	row.Id = rowIdSeed++; // give it a new Id
+	wss.broadcast('new:row', { // broadcast
+		row: row
+	});
+	
+	rowsArray.splice(0,0,row); // add row to the list
+	
+}, 20000);
+
+// adding new rows randomly
+setInterval(function() {
+	wss.broadcast('update:row', { // broadcast
+		row: rowsArray[0]
+	});
+}, 5000);

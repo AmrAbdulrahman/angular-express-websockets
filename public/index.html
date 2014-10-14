@@ -87,7 +87,7 @@
                     Red: IsFailed(row)}"
                     class="Row">
 
-                <div class="RowHeader" ng-click="activate($index)">
+                <div class="RowHeader" ng-click="Activate($index)">
                     <div class="Column ChangeListBuild">
                         <div class="HeaderContent">
                             <div ng-class="{
@@ -377,7 +377,11 @@
     <div id="logs">
         <div id="logHeader"><span class="text">LOG</span></div>
         <div id="logContent">
-            <div ng-repeat="log in logs" class="log">
+            <div ng-repeat="log in logs" 
+                 ng-class="{
+                    log: true ,
+                    yellow:  log.color == LogColor.Yellow ,
+                    orange: log.color == LogColor.Orange}">
                 <span class="time">[{{log.time | date : "hh:mm:ss"}}]</span>
                 <span class="message">{{log.message}}</span>
             </div>
