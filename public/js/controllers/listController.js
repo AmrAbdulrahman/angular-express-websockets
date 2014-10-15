@@ -137,12 +137,15 @@
         $scope.LogColor = { Yellow: 'yellow', Orange: 'orange' };
         $scope.logs = [];
         $scope.Log = function (message, color) {
-            
+                       
             if (color == undefined) {
                 color = 'white';
             }
 
             $scope.logs.splice(0, 0, { counter: $scope.logs.length + 1, time: new Date(), message: message, color: color });
+
+            if($scope.logs.length == config.maxLogSize + 1)
+                $scope.logs.splice(config.maxLogSize);
         }
 
         /*****************************************************************************************
@@ -251,10 +254,9 @@
         }
 
 
-        ///////////////////////////////// testing ////////////////////////////////////////
-
-
-
+        /*****************************************************************************************
+        Ad-hoc testing
+        *****************************************************************************************/
         // for testing purposes only
         $scope.PullNewRow = function () {
             console.log('client: um pulling...');
