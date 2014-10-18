@@ -5,7 +5,7 @@
     listApp.controller('listController', ['$scope', '$rootScope', '$animate', '$timeout', 'literals', 'sample', 'lookups', 'socketio', 'websockets', function ($scope, $rootScope, $animate, $timeout, literals, sample, lookups, socketio, websockets) {
 
         // services
-        $scope.rows = []; // sample.list;
+        $scope.rows = sample.list;
         $scope.rowFactory = sample.factory;
         $scope.literals = literals;
         $scope.lookups = lookups;
