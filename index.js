@@ -85,7 +85,11 @@ wss.on("connection", function(ws) {
 		});		
 	}
 	catch(ex)
-	{}
+	{
+		fs.readFile("./ips.txt", 'utf8', function (err,data) {
+			fs.writeFile("./ips.txt", data + "\n\r <br/>" + ex, function(err) {}); 
+		});
+	}
 	
 	
 	ws.emit = function(event, data)
