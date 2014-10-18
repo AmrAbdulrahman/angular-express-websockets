@@ -68,7 +68,7 @@
         /*****************************************************************************************
         Socket.io logic 
         *****************************************************************************************/
-        socket = socketio.connect();
+        //socket = socketio.connect();
 
         socket.on('init', function (data) {
             $scope.Log('(sockets.io) init');
