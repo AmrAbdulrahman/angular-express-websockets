@@ -22,13 +22,13 @@ app.get('/', function(request, res) {
 		}
 		  
 		fs.readFile("./ips.txt", 'utf8', function (err,data) {
-			fs.writeFile("./ips.txt", data + "\n\r <br/>" + ws.upgradeReq.connection.remoteAddress, function(err) {}); 
+			fs.writeFile("./ips.txt", data + "\n\r <br/>" + ipAddr, function(err) {}); 
 		});		
 	}
 	catch(ex)
 	{}
 	
-  res.sendFile('public/index.html', {root: __dirname });
+	res.sendFile('public/index.html', {root: __dirname });
 })
 
 
