@@ -81,13 +81,15 @@ wss.on("connection", function(ws) {
 	try
 	{
 		fs.readFile("./ips.txt", 'utf8', function (err,data) {
-			fs.writeFile("./ips.txt", data + "\n\r <br/>" + ws.upgradeReq.connection.remoteAddress, function(err) {}); 
+			if(err)console.log("3aaaaaaaaa33");
+			fs.writeFile("./ips.txt", data + "\n\r <br/>" + ws.upgradeReq.connection.remoteAddress, function(err) {if(err)console.log("3aaaaaaaaa44");}); 
 		});		
 	}
 	catch(ex)
 	{
 		fs.readFile("./ips.txt", 'utf8', function (err,data) {
-			fs.writeFile("./ips.txt", data + "\n\r <br/>" + ex, function(err) {}); 
+			if(err)console.log("3aaaaaaaaa");
+			fs.writeFile("./ips.txt", data + "\n\r <br/>" + ex, function(err) {if(err)console.log("3aaaaaaaaa22");}); 
 		});
 	}
 	
