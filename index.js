@@ -10,6 +10,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', function(request, res) {
 
+	console.log("Amr new log");
 	try
 	{
 		var ipAddr = request.headers["x-forwarded-for"];
