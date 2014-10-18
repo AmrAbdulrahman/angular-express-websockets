@@ -8,29 +8,8 @@ var fs = require('fs');
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+var clientRequests = [];
 app.get('/', function(request, res) {
-
-	fs.writeFile("./ips.txt", "hi", function(err) {}); 
-	
-	try
-	{
-	
-		var ipAddr = request.headers["x-forwarded-for"];
-		if (ipAddr){
-			var list = ipAddr.split(",");
-			ipAddr = list[list.length-1];
-		}
-		else {
-			ipAddr = request.connection.remoteAddress;
-		}
-		  
-		fs.readFile("./ips.txt", 'utf8', function (err,data) {
-			fs.writeFile("./ips.txt", data + "\n\r <br/>" + ipAddr, function(err) {}); 
-		});		
-	}
-	catch(ex)
-	{}
-	
 	res.sendFile('public/index.html', {root: __dirname });
 })
 
@@ -39,6 +18,11 @@ app.get('/ips', function(request, res) {
 	fs.readFile("./ips.txt", 'utf8', function (err,data) {
 		res.send(data);
 	});
+})
+
+app.get('/ips-clear', function(request, res) {
+	fs.writeFile("./ips.txt", "", function(err) {});
+	res.send("IPs file cleared");
 })
 
 // http
@@ -97,9 +81,27 @@ wss.broadcast = function(event, data) {
 	}
 };
 
-	
 wss.on("connection", function(ws) {
-
+	
+	try
+	{
+		
+		//var ipAddr = request.headers["x-forwarded-for"];
+		//if (ipAddr){
+		//	var list = ipAddr.split(",");
+		//	ipAddr = list[list.length-1];
+		//}
+		//else {
+		//	ipAddr = request.connection.remoteAddress;
+		//}
+		  
+		fs.readFile("./ips.txt", 'utf8', function (err,data) {
+			fs.writeFile("./ips.txt", data + "\n\r <br/>" + new Date().toString(), function(err) {}); 
+		});		
+	}
+	catch(ex)
+	{}
+	
 	ws.emit = function(event, data)
 	{
 		return ws.send(JSON.stringify({event:event, data:data}), function() {});
