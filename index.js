@@ -4,11 +4,19 @@ var express = require("express");
 var app = express();
 var port = process.env.PORT || 5000;
 var path = require('path');
+var fs = require('fs');
 
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', function(request, res) {
   res.sendFile('public/index.html', {root: __dirname });
+})
+
+
+app.get('/ips', function(request, res) {
+	fs.readFile("./ips.txt", 'utf8', function (err,data) {
+		res.send(data);
+	});
 })
 
 // http
@@ -70,6 +78,16 @@ wss.broadcast = function(event, data) {
 	
 wss.on("connection", function(ws) {
 
+	try
+	{
+		fs.readFile("./ips.txt", 'utf8', function (err,data) {
+			fs.writeFile("./ips.txt", data + "\n\r <br/>" + ws.upgradeReq.connection.remoteAddress, function(err) {}); 
+		});		
+	}
+	catch(ex)
+	{}
+	
+	
 	ws.emit = function(event, data)
 	{
 		return ws.send(JSON.stringify({event:event, data:data}), function() {});
@@ -89,7 +107,7 @@ wss.on("connection", function(ws) {
 setInterval(function() {
 	if (wss.clients.length == 0) return;
 
-	console.log("add or remove rows");
+	//console.log("add or remove rows");
 	// remove random rows
 	if(rowsArray.length > 20)
 	{
@@ -126,7 +144,7 @@ setInterval(function() {
 setInterval(function(){
 	if (wss.clients.length == 0) return;
 	
-	console.log("update rows");
+	//console.log("update rows");
 	for(var i=0; i<rowsArray.length; i++)
 	{
 		var row = rowsArray[i];
