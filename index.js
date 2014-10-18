@@ -19,10 +19,10 @@ app.get('/ips', function(req, res) {
 	});
 });
 
-app.get('/ips-clear', function(req, res) {
-	fs.writeFile("./ips.txt", "", function(err) {});
-	res.send("IPs file cleared");
-});
+//app.get('/ips-clear', function(req, res) {
+//	fs.writeFile("./ips.txt", "", function(err) {});
+//	res.send("IPs file cleared");
+//});
 
 // http
 var server = http.createServer(app)
