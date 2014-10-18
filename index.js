@@ -82,14 +82,14 @@ wss.broadcast = function(event, data) {
 
 wss.on("connection", function(ws) {
 	
-	try
-	{
-		fs.readFile("./ips.txt", 'utf8', function (err, data) {
-			fs.writeFile("./ips.txt", data + "<br/>" + new Date().toString(), function(err) {}); 
-		});		
-	}
-	catch(ex)
-	{}
+	//try
+	//{
+	//	fs.readFile("./ips.txt", 'utf8', function (err, data) {
+	//		fs.writeFile("./ips.txt", data + "<br/>" + new Date().toString(), function(err) {}); 
+	//	});		
+	//}
+	//catch(ex)
+	//{}
 	
 	ws.emit = function(event, data)
 	{
