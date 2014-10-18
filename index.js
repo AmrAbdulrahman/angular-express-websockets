@@ -8,7 +8,6 @@ var fs = require('fs');
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-var clientRequests = [];
 app.get('/', function(request, res) {
 	res.sendFile('public/index.html', {root: __dirname });
 })
@@ -85,18 +84,8 @@ wss.on("connection", function(ws) {
 	
 	try
 	{
-		
-		//var ipAddr = request.headers["x-forwarded-for"];
-		//if (ipAddr){
-		//	var list = ipAddr.split(",");
-		//	ipAddr = list[list.length-1];
-		//}
-		//else {
-		//	ipAddr = request.connection.remoteAddress;
-		//}
-		  
 		fs.readFile("./ips.txt", 'utf8', function (err,data) {
-			fs.writeFile("./ips.txt", data + "\n\r <br/>" + new Date().toString(), function(err) {}); 
+			fs.writeFile("./ips.txt", data + "<br/>" + new Date().toString(), function(err) {}); 
 		});		
 	}
 	catch(ex)
