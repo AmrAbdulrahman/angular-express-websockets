@@ -4,7 +4,7 @@ var express = require("express");
 var app = express();
 var port = process.env.PORT || 5000;
 var path = require('path');
-var fs = require('fs');
+//var fs = require('fs');
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -13,11 +13,11 @@ app.get('/', function(req, res) {
 });
 
 
-app.get('/ips', function(req, res) {
-	fs.readFile("./ips.txt", 'utf8', function (err,data) {
-		res.send(data);
-	});
-});
+//app.get('/ips', function(req, res) {
+//	fs.readFile("./ips.txt", 'utf8', function (err,data) {
+//		res.send(data);
+//	});
+//});
 
 //app.get('/ips-clear', function(req, res) {
 //	fs.writeFile("./ips.txt", "", function(err) {});
