@@ -1,0 +1,53 @@
+[33mcommit b82eddf5e95e7fb12798337f002de610f3aa0190[m
+Author: amr <abu.muslim.amr@gmail.com>
+Date:   Sat Oct 18 18:49:56 2014 +0200
+
+    c1
+
+[1mdiff --git a/public/config.js b/public/config.js[m
+[1mindex 20150b5..ff38cee 100644[m
+[1m--- a/public/config.js[m
+[1m+++ b/public/config.js[m
+[36m@@ -1,7 +1,7 @@[m
+ ﻿[m
+ var config =[m
+ {[m
+[31m-    webSocketServerUrl: 'ws://jobvitetasksubmission.herokuapp.com/',[m
+[32m+[m[32m    webSocketServerUrl: 'ws://jobvitetasksubmission.herokuapp.com',[m
+     //webSocketServerUrl: 'ws://localhost:5000/',[m
+     maxLogSize: 50[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/public/js/controllers/listController.js b/public/js/controllers/listController.js[m
+[1mindex fe1423c..695876b 100644[m
+[1m--- a/public/js/controllers/listController.js[m
+[1m+++ b/public/js/controllers/listController.js[m
+[36m@@ -68,7 +68,7 @@[m
+         /*****************************************************************************************[m
+         Socket.io logic [m
+         *****************************************************************************************/[m
+[31m-        socket = socketio.connect();[m
+[32m+[m[32m        //socket = socketio.connect();[m
+ [m
+         socket.on('init', function (data) {[m
+             $scope.Log('(sockets.io) init');[m
+
+[33mcommit afa4b6b5760f56fd35a8e07e810acf90e2b86532[m
+Author: amr <abu.muslim.amr@gmail.com>
+Date:   Sat Oct 18 18:37:48 2014 +0200
+
+    c1
+
+[1mdiff --git a/index.js b/index.js[m
+[1mindex 7245b8e..7300b80 100644[m
+[1m--- a/index.js[m
+[1m+++ b/index.js[m
+[36m@@ -2,7 +2,7 @@[m [mvar WebSocketServer = require("ws").Server;[m
+ var http = require("http");[m
+ var express = require("express");[m
+ var app = express();[m
+[31m-var port = 5000;//process.env.PORT || 5000;[m
+[32m+[m[32mvar port = process.env.PORT || 5000;[m
+ var path = require('path');[m
+ //var fs = require('fs');[m
+ [m
