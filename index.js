@@ -8,30 +8,30 @@ var fs = require('fs');
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', function(request, res) {
+app.get('/', function(req, res) {
 	res.sendFile('public/index.html', {root: __dirname });
-})
+});
 
 
-app.get('/ips', function(request, res) {
+app.get('/ips', function(req, res) {
 	fs.readFile("./ips.txt", 'utf8', function (err,data) {
 		res.send(data);
 	});
-})
+});
 
-app.get('/ips-clear', function(request, res) {
+app.get('/ips-clear', function(req, res) {
 	fs.writeFile("./ips.txt", "", function(err) {});
 	res.send("IPs file cleared");
-})
+});
 
 // http
 var server = http.createServer(app)
 server.listen(port)
-console.log("http server listening on %d", port)
+console.log("http server listening on %d", port);
 
 // web sockets
-var wss = new WebSocketServer({server: server})
-console.log("websocket server created")
+var wss = new WebSocketServer({server: server});
+console.log("websocket server created");
 
 // rows logic
 var utils = require("./utils.js");
@@ -84,7 +84,7 @@ wss.on("connection", function(ws) {
 	
 	try
 	{
-		fs.readFile("./ips.txt", 'utf8', function (err,data) {
+		fs.readFile("./ips.txt", 'utf8', function (err, data) {
 			fs.writeFile("./ips.txt", data + "<br/>" + new Date().toString(), function(err) {}); 
 		});		
 	}
