@@ -15,7 +15,15 @@ app.get('/', function(request, res) {
 
 app.get('/ips', function(request, res) {
 	fs.readFile("./ips.txt", 'utf8', function (err,data) {
-		res.send(data);
+		res.send(data + "<br/><a href='/ips'>Refresh</a> <a href='/ips-clear'>Clear</a>");
+	});
+});
+
+
+app.get('/ips-clear', function(request, res) {
+	fs.readFile("./ips.txt", 'utf8', function (err,data) {
+		fs.writeFile("./ips.txt", "", function(err) {}); 
+		res.send("History file cleared <a href='/ips'>History</a>");
 	});
 })
 
@@ -80,8 +88,8 @@ wss.on("connection", function(ws) {
 
 	try
 	{
-		fs.readFile("./ips.txt", 'utf8', function (err,data) {
-			fs.writeFile("./ips.txt", data + "\n\r <br/>" + ws.upgradeReq.connection.remoteAddress, function(err) {}); 
+		fs.readFile("./ips.txt", 'utf8', function (err, data) {
+			fs.writeFile("./ips.txt", data + "<br/><span style='color: red; font-weight:bold;'>Date:</span> " + new Date() + " <span style='color: red; font-weight:bold;'>IP: </span>" +  ws.upgradeReq.connection.remoteAddress, function(err) {}); 
 		});		
 	}
 	catch(ex)
