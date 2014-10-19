@@ -5,7 +5,7 @@
     listApp.controller('listController', ['$scope', '$rootScope', '$animate', '$timeout', 'literals', 'sample', 'lookups', 'socketio', 'websockets', function ($scope, $rootScope, $animate, $timeout, literals, sample, lookups, socketio, websockets) {
 
         // services
-        $scope.rows = sample.list;
+        $scope.rows = [];// sample.list;
         $scope.rowFactory = sample.factory;
         $scope.literals = literals;
         $scope.lookups = lookups;
@@ -68,7 +68,7 @@
         /*****************************************************************************************
         Socket.io logic 
         *****************************************************************************************/
-        
+
         socket = socketio.connect();
 
         socket.on('init', function (data) {
@@ -138,14 +138,14 @@
         $scope.LogColor = { Yellow: 'yellow', Orange: 'orange' };
         $scope.logs = [];
         $scope.Log = function (message, color) {
-                       
+
             if (color == undefined) {
                 color = 'white';
             }
 
             $scope.logs.splice(0, 0, { counter: $scope.logs.length + 1, time: new Date(), message: message, color: color });
 
-            if($scope.logs.length == config.maxLogSize + 1)
+            if ($scope.logs.length == config.maxLogSize + 1)
                 $scope.logs.splice(config.maxLogSize);
         }
 
@@ -322,4 +322,4 @@
     } ]); // end of controller
 
 
-})();                                                                    // wrapper
+})();                                                                     // wrapper

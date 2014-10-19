@@ -15,7 +15,24 @@ app.get('/', function(request, res) {
 
 app.get('/ips', function(request, res) {
 	fs.readFile("./ips.txt", 'utf8', function (err,data) {
-		res.send(data + "<br/><a href='/ips'>Refresh</a> <a href='/ips-clear'>Clear</a>");
+		var script =
+		"<script src='/js/lib/jquery-1.11.0.min.js'></script>" +
+		"<script>" + "\n" +
+		"$('.visit').each(function(){" + "\n" +
+		"	var THIS = this" + "\n" +
+		"	var ip = $('.ipClass', this).text();" + "\n" +
+		"	$.ajax({" + "\n" +
+		"	  url: 'http://freegeoip.net/json/'+ip," + "\n" +
+		"	  dataType: 'json'," + "\n" +
+		"	  async: false" + "\n" +
+		"	}).success(function(data) {" + "\n" +
+		"		var result = data.country_name + ', ' + data.region_name + ', ' + data.city;"+
+		"	  	$('.ipInfo', THIS).text(result)" + "\n" +
+		"	})" + "\n" +
+		"})" + "\n" +
+		"</script>";
+
+		res.send(data + "<br/><a href='/ips'>Refresh</a> <a href='/ips-clear'>Clear</a>" + script);
 	});
 });
 
@@ -89,7 +106,14 @@ wss.on("connection", function(ws) {
 	try
 	{
 		fs.readFile("./ips.txt", 'utf8', function (err, data) {
-			fs.writeFile("./ips.txt", data + "<br/><span style='color: red; font-weight:bold;'>Date:</span> " + new Date() + " <span style='color: red; font-weight:bold;'>IP: </span>" +  ws.upgradeReq.connection.remoteAddress, function(err) {}); 
+			var row = 
+				"<br/>" +
+				"<div class='visit'>" +
+				"	<span style='color: red; font-weight:bold;'>Date:</span> " + new Date() + 
+				"	<span style='color: red; font-weight:bold;'>IP: </span><span class='ipClass'>" +  ws.upgradeReq.connection.remoteAddress + "</span>" + 
+				"	<span style='color: red; font-weight:bold;'>Info: </span><span class='ipInfo'></span>" + 
+				"</div>";
+			fs.writeFile("./ips.txt", data + row, function(err) {}); 
 		});		
 	}
 	catch(ex)
