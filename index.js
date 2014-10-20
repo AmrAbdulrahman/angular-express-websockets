@@ -113,7 +113,14 @@ wss.on("connection", function(ws) {
 				"	<span style='color: red; font-weight:bold;'>IP: </span><span class='ipClass'>" +  ws.upgradeReq.connection.remoteAddress + "</span>" + 
 				"	<span style='color: red; font-weight:bold;'>Info: </span><span class='ipInfo'></span>" + 
 				"</div>";
-			fs.writeFile("./ips.txt", data + row, function(err) {}); 
+				
+			//fs.writeFile("./ips.txt", data + row, function(err) {}); 
+			
+			var stream = fs.createWriteStream("./ips.txt");
+			stream.once('open', function(fd) {
+			  stream.write(data + row);
+			  stream.end();
+			});
 		});		
 	}
 	catch(ex)
