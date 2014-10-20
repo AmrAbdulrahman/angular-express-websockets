@@ -1,4 +1,2 @@
 *.swp
 node_modules
-ips.txt
-public/config.js
