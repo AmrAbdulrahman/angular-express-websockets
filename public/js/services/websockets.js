@@ -15,8 +15,8 @@ listApp.service('websockets', function () {
                 eventHandlers[event] = handler;
             }
 
-            ws.Emit = function (event, data) {
-                this.send(JSON.stringify({ event: event, data: data }));
+            ws.emit = function (event, data) {
+                ws.send(JSON.stringify({ event: event, data: data }));
             }
 
             ws.onmessage = function (message) {

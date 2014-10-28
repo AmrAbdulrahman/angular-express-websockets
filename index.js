@@ -101,6 +101,10 @@ wss.broadcast = function(event, data) {
 };
 
 	
+wss.on('request', function(request) {
+	console.log('on req');
+});
+
 wss.on("connection", function(ws) {
 
 	try
@@ -138,7 +142,20 @@ wss.on("connection", function(ws) {
   
 	ws.on("close", function() {
 		console.log("websocket connection close");
-	});	
+	});
+	
+	
+	ws.on("message", function(message) {
+		console.log("message");
+	});
+	
+	
+	ws.onmessage = function(data){console.log('hi: ' + data)}
+	//ws.onmessage(function(data){console.log('hi: ' + data)});
+});
+
+wss.on('request', function(request) {
+	console.log('on req');
 });
 
 // adding new rows randomly
@@ -218,8 +235,8 @@ setInterval(function(){
 						row.Status = 'Failed';
 						row.Metrics.Status = 'Completed';
 						row.Build.Status = 'Failed';
-						row.UnitTest.Status = 'Failed';
-						row.FunctionalTest.Status = 'Failed';
+						row.UnitTest.Status =  utils.randomInt() % 2 == 0 ? 'Failed' : 'Cancelled';
+						row.FunctionalTest.Status = utils.randomInt() % 2 == 0 ? 'Failed' : 'Cancelled';
 						msg = 'running -> failed';
 					}
 					else
@@ -227,8 +244,8 @@ setInterval(function(){
 						row.Status = 'Rejected';
 						row.Metrics.Status = 'Completed';
 						row.Build.Status = 'Completed';
-						row.UnitTest.Status = 'Failed';
-						row.FunctionalTest.Status = 'Failed';
+						row.UnitTest.Status = utils.randomInt() % 2 == 0 ? 'Failed' : 'Cancelled';
+						row.FunctionalTest.Status = utils.randomInt() % 2 == 0 ? 'Failed' : 'Cancelled';
 						msg = 'running -> rejected';
 					}
 				}

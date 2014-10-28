@@ -5,7 +5,7 @@
     listApp.controller('listController', ['$scope', '$rootScope', '$animate', '$timeout', 'literals', 'sample', 'lookups', 'socketio', 'websockets', function ($scope, $rootScope, $animate, $timeout, literals, sample, lookups, socketio, websockets) {
 
         // services
-        $scope.rows = [];// sample.list;
+        $scope.rows = []; // sample.list;
         $scope.rowFactory = sample.factory;
         $scope.literals = literals;
         $scope.lookups = lookups;
@@ -24,7 +24,13 @@
         // however, i've implemented my socket.io event listeners and tested them locally.
         // code of both "web sockets" and "socket.io" are left for interview purposes
 
-        angular.element(document).ready(function () {
+        $scope.onready = function (callback) {
+            angular.element(document).ready(function () {
+                callback();
+            });
+        }
+
+        $scope.onready(function () {
             $scope.Log('server is configured to send a new entry every 10 seconds', $scope.LogColor.Yellow);
             $scope.Log('server is configured to update random entry every 5 seconds', $scope.LogColor.Orange);
             $scope.Log('when the list size becomes 20, the server automatically removes the oldest one by one');
@@ -61,10 +67,10 @@
             $scope.$apply();
         });
 
-        $scope.AskForRow = function () {
-
-            $scope.ws.Emit('askfor:row', {});
+        $scope.ws.onopen = function () {
+            $scope.ws.emit('hithere', { message: 'hi there' });
         }
+
         /*****************************************************************************************
         Socket.io logic 
         *****************************************************************************************/
@@ -322,4 +328,4 @@
     } ]); // end of controller
 
 
-})();                                                                     // wrapper
+})();                                                                          // wrapper
